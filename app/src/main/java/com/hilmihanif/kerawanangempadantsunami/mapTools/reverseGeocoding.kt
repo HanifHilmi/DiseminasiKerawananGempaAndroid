@@ -20,6 +20,7 @@ import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import kotlinx.coroutines.delay
 
 
+private lateinit var graphicsOverlays:MutableList<GraphicsOverlay>
 suspend fun reverseGeocoding(
     mapPoint: Point,
     mMapView:MapView,
@@ -54,15 +55,18 @@ suspend fun reverseGeocoding(
 
     val geocode = geocodeList[0]
     //            Log.d(TEST_LOG, "geocode atrributes : ${geocode.attributes.toString()}")
-    geocode.displayLocation!!.let {
-        Log.d(TEST_LOG, "display Location ${it.y}")
-        mMapView.setViewpointCenter(
-            Point(
-                it.x,
-                it.y - 2 * Math.pow(10.0, 5.0),
-                it.spatialReference
-            )
-        )
+    if(cekProvinsi(geocode.attributes).second){
+        geocode.displayLocation!!.let {
+            Log.d(TEST_LOG, "display Location ${it.y}")
+
+//            mMapView.setViewpointCenter(
+//                Point(
+//                    it.x,
+//                    it.y - 2 * Math.pow(10.0, 5.0),
+//                    it.spatialReference
+//                )
+//            )
+        }
     }
     return geocode.attributes
 }
@@ -70,15 +74,17 @@ suspend fun reverseGeocoding(
 
 fun cekProvinsi(map:Map<String,Any?>):Pair<String,Boolean>{
 
-    map.let {
-        if (map.getValue("CountryCode") == "IDN") {
-            if (map.getValue("Region") == "Aceh") return "Aceh" to true
-            else if (map.getValue("Region") == "Sumatera Utara") return "Sumatera Utara" to true
-            else if (map.getValue("Region") == "Sumatera Barat")  return "Sumatera Barat" to true
-            else if (map.getValue("Region") == "Riau")  return "Riau" to true
-            else  return "Not Supported" to true
-        } else return "Not Available" to false
-    }
+    if (map.isNotEmpty()){
+        map.let {
+            if (map.getValue("CountryCode") == "IDN") {
+                if (map.getValue("Region") == "Aceh") return "Aceh" to true
+                else if (map.getValue("Region") == "Sumatera Utara") return "Sumatera Utara" to true
+                else if (map.getValue("Region") == "Sumatera Barat")  return "Sumatera Barat" to true
+                else if (map.getValue("Region") == "Riau")  return "Riau" to true
+                else  return "Not Supported" to true
+            } else return "Not Available" to false
+        }
+    } else return "Failed to Load" to false
 
 
 }
@@ -101,7 +107,9 @@ fun cekProvinsi(map:Map<String,Any?>):Pair<String,Boolean>{
 
         val pinLocationSymbol = PictureMarkerSymbol.createWithImage(pinImageBitmap)
         val pinSize = 50f
-        if (graphicList.isNotEmpty()) graphicList.removeLast()
+        //if (graphicList.isNotEmpty()) graphicList.removeLast()
+        graphicsOverlays = mapView.graphicsOverlays
+        removeLastPin()
 
         pinLocationSymbol.height = pinSize
         pinLocationSymbol.width = pinSize
@@ -112,4 +120,9 @@ fun cekProvinsi(map:Map<String,Any?>):Pair<String,Boolean>{
         setGraphicsOverlay(mGraphicsOverlay)
         return wgs84Point
     }
+}
+
+fun removeLastPin() {
+    if (graphicsOverlays.isNotEmpty()) graphicsOverlays.removeLast()
+
 }

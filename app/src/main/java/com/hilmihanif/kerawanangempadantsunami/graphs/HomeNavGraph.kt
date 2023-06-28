@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.hilmihanif.kerawanangempadantsunami.BottomBarScreen
-import com.hilmihanif.kerawanangempadantsunami.screens.KerawananScreen
+import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananScreen
 import com.hilmihanif.kerawanangempadantsunami.screens.ScreenContent
 
 
