@@ -8,17 +8,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -26,34 +29,62 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.hilmihanif.kerawanangempadantsunami.R
 
-//val toggleList = listOf<String>("Koordinat saat Ini","Tap melalui peta","Input Koordinat")
-
 private lateinit var toggleList: List<String>
 
 @Composable
 fun InputKoordinatCard(
     modifier: Modifier = Modifier,
-    inputDesc :String,
-    locatorTask: LocatorTask? = null,
-    errorMessage:Pair<Boolean,String>,
-    toggleState:String,
+    viewModel: KerawananViewModel,
+    locatorTask: LocatorTask,
     onProsesButtonClick:() -> Unit ={},
     onToggleChange :(String) -> Unit ={}
-) {
-    //var toggleState by remember {mutableStateOf(toggleList[0]) }
-    //var errorMessage by remember {mutableStateOf(true to "Ini adalah Test Error")}
+){
+    val context = LocalContext.current
+    val kerawananUiState by viewModel.inputCardUiState.collectAsState()
+    val locatorStatus by locatorTask.loadStatus.collectAsState()
 
+    viewModel.setInputDesc(context)
+    InputKoordinatCardContent(
+        modifier = modifier,
+        locatorStatus =locatorStatus,
+        inputCardUiState = kerawananUiState,
+        onProsesButtonClick = onProsesButtonClick,
+        onToggleChange = onToggleChange,
+        onLatFieldValueChanged = {
+            viewModel.setLatLongFieldValue(lat= it)
+        },
+        onLongFieldValueChanged = {
+            viewModel.setLatLongFieldValue(long= it)
+
+        }
+    )
+
+}
+
+@Composable
+fun InputKoordinatCardContent(
+    modifier: Modifier = Modifier,
+    locatorStatus:LoadStatus,
+    inputCardUiState:InputCardUiState,
+    onProsesButtonClick:() -> Unit ={},
+    onToggleChange :(String) -> Unit ={},
+    onLatFieldValueChanged: (TextFieldValue) -> Unit ={},
+    onLongFieldValueChanged: (TextFieldValue) -> Unit = {}
+) {
     toggleList = stringArrayResource(id = R.array.toggle_list).toList()
     Card(
         modifier = modifier
@@ -62,8 +93,8 @@ fun InputKoordinatCard(
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5.dp))
             .padding(8.dp)
 
-
     ) {
+
         Row(modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
@@ -97,7 +128,7 @@ fun InputKoordinatCard(
             .padding(horizontal = 6.dp)
         ) {
             MultiToggleButton(
-                currentSelection =  toggleState ,
+                currentSelection =  inputCardUiState.toggleButtonState ,
                 toggleStates = toggleList,
                 onToggleChange = {
                     onToggleChange(it)
@@ -109,59 +140,131 @@ fun InputKoordinatCard(
                     .padding(vertical = 8.dp)
             )
             Text(
-                text = inputDesc,
+                text = inputCardUiState.currentInputDesc,
                 modifier = Modifier
                     .padding(all = 8.dp)
                     .fillMaxWidth()
             )
-            if(errorMessage.first){
+
+            if(inputCardUiState.currentErrorAlert.first){
                 Row {
                     Image(
                         imageVector = Icons.Default.Warning,
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(Color.Red)
                     )
-                    Text(text = errorMessage.second)
+                    Text(text = inputCardUiState.currentErrorAlert.second)
                 }
             }
-            val locatorStatus= locatorTask!!.loadStatus.collectAsState()
-            if (locatorStatus.value != LoadStatus.Loaded){
+            if (locatorStatus != LoadStatus.Loaded){
                 LinearProgressIndicator(
                     modifier= Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 )
             }
+
+//            var latFieldValue by remember {mutableStateOf(TextFieldValue("")) }
+//            var longFieldValue by remember {mutableStateOf(TextFieldValue("")) }
+
+            when(inputCardUiState.toggleButtonState){
+                toggleList[0]->{}
+                toggleList[1]->{}
+                toggleList[2]->{
+                    InputKoordinatTextField(
+                        latlong = inputCardUiState.latTextFieldValue to inputCardUiState.longTextFieldValue ,
+                        isInputError = false,
+                        onLatFieldValueChanged = {
+                            onLatFieldValueChanged(it)
+//                            latFieldValue = it
+                        },
+
+
+                        onLongFieldValueChanged = {
+                            onLongFieldValueChanged(it)
+//                            longFieldValue = it
+                        }
+                    )
+                }
+            }
             Button(
                 modifier = Modifier
                     .align(Alignment.End),
-                onClick = { onProsesButtonClick() }) {
+                onClick = { onProsesButtonClick() },
+                enabled = (inputCardUiState.pinnedLocation != null) && (inputCardUiState.pinnedLocation.provinsi != "Not Supported"  )
+            ) {
                 Text(text = "Proses")
-            }
-
-            when(toggleState){
-                toggleList[0]->{
-
-                }
-                toggleList[1]->{
-
-                }
-                toggleList[2]->{
-
-                }
             }
         }
     }
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InputKoordinatTextField(
+
+    latlong:Pair<TextFieldValue,TextFieldValue>,
+    isInputError:Boolean,
+    onLatFieldValueChanged:(TextFieldValue) -> Unit ={},
+    onLongFieldValueChanged:(TextFieldValue) -> Unit = {},
+) = Row(modifier = Modifier.fillMaxWidth()) {
+    OutlinedTextField(
+        value = latlong.first,
+        onValueChange = {
+            onLatFieldValueChanged(it)
+        },
+        singleLine = true,
+        modifier = Modifier.weight(1f),
+        //colors = TextFieldDefaults.textFieldColors(containerColor = dynamicLightColorScheme(LocalContext.current).surface),
+        label = { Text(text="latitude") },
+        isError = isInputError,
+//        keyboardActions = ,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+    )
+    OutlinedTextField(
+        value = latlong.second,
+        onValueChange = {
+            onLongFieldValueChanged(it)
+        },
+        singleLine = true,
+        modifier = Modifier.weight(1f),
+        //colors = TextFieldDefaults.textFieldColors(containerColor = dynamicLightColorScheme(LocalContext.current).surface),
+        label = { Text(text="longitude") },
+        isError = isInputError,
+//        keyboardActions = ,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+    )
+
+}
+
+
+
+
 //@Preview(name="NightMode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name="LightMode")
+@Preview(name="LightMode", showBackground = true,showSystemUi = true)
 @Composable
 fun PreviewCard() {
-    InputKoordinatCard(
-        errorMessage = true to "Ini adalah test pesan error",
-        toggleState = stringArrayResource(id = R.array.toggle_list).toList()[1] ,
-        inputDesc = "Tap pada peta untuk mendapatkan lokasi",
+    val listtoggle = stringArrayResource(id = R.array.toggle_list)
+
+
+    val previewState = InputCardUiState(
+        toggleButtonState = listtoggle[1],
+        currentErrorAlert = true to "TEST 123",
+    )
+    InputKoordinatCardContent(
+        locatorStatus = LoadStatus.Loaded,
+        inputCardUiState = previewState,
+        )
+
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewText() {
+    InputKoordinatTextField(
+        Pair(TextFieldValue("8090"),TextFieldValue("")),
+        true
     )
 }

@@ -13,7 +13,7 @@
 
     <string name="input_koordinat">Masukkan titik koordinat (Khusus Provinsi Aceh, Sumatera Utara, Sumatera Barat, dan Riau</string>
     <string name="input_map">Tap peta untuk menentukan koordinat (Khusus Provinsi Aceh, Sumatera Utara, Sumatera Barat, dan Riau</string>
-    <string name="input_location">Lokasi anda saat ini berada di %d</string>
+    <string name="input_location">Lokasi anda saat ini berada di %s</string>
 
     <string name="more_info">Info Selengkapnya</string>
     <string name="new_input">Input Baru</string>

@@ -29,22 +29,12 @@ import com.hilmihanif.kerawanangempadantsunami.R
 fun KerawananScreen(
     kerawananViewModel: KerawananViewModel = viewModel()
 ) {
-    val localcontext = LocalContext.current
-    val kerawananUiState by kerawananViewModel.kerawananUiState.collectAsState()
     val toggleList = stringArrayResource(id = R.array.toggle_list).toList()
-    //val composableScope = rememberCoroutineScope()
+
+    val localcontext = LocalContext.current
+    val mapUiState by kerawananViewModel.mapUiState.collectAsState()
     val map by remember { mutableStateOf(setBaseMap()) }
-    //var reverseGeocoderesult by remember{ mutableStateOf(mapOf<String,Any?>())}
     val mapStatus: State<LoadStatus> = map.loadStatus.collectAsState()
-    //val locatorStatus: State<LoadStatus> = locatorTask.loadStatus.collectAsState()
-
-    //var mapStatusDesc by remember { mutableStateOf("")}
-
-//    val viewpoint by remember { mutableStateOf(currentViewpoint) }
-//    var errorMessage by remember {mutableStateOf(false to "")}
-//    var pinEnabled by remember { mutableStateOf(true)}
-//    var toggleState by remember { mutableStateOf(toggleList[0])}
-//    var tapEnabled by remember { mutableStateOf(true)}
 
 
 
@@ -57,19 +47,18 @@ fun KerawananScreen(
 
     KerawananContent(
         map = map,
-        viewpoint = kerawananUiState.currentViewPoint,
+        viewpoint = mapUiState.currentViewPoint,
         mapStatus = mapStatus,
-        locatorTask = kerawananUiState.locatorTask!!,
-        mapStatusDesc = kerawananUiState.currentMapStatusDesc,
-        errorMessage = kerawananUiState.currentErrorAlert,
-        toggleState = kerawananUiState.toggleButtonState,
-        inputDesc = kerawananUiState.currentInputDesc,
+        locatorTask = mapUiState.locatorTask!!,
+        mapStatusDesc = mapUiState.currentMapStatusDesc,
         onSingleTap = {point, mapView ->
             kerawananViewModel.setOnTapPinLocation(point,mapView,toggleList)
         },
         onInputToggleChange= {
             kerawananViewModel.updateToggleState(select = it)
-        }
+        },
+        viewModel= kerawananViewModel,
+
     )
 }
 
@@ -83,43 +72,39 @@ fun KerawananContent(
     viewpoint:Viewpoint,
     mapStatus: State<LoadStatus>,
     mapStatusDesc:String,
-    inputDesc:String,
     locatorTask: LocatorTask,
-    toggleState: String,
-    errorMessage:Pair<Boolean,String>,
     onSingleTap: (Point?,MapView) -> Unit,
-    onInputToggleChange:(String)->Unit
-) {
-    Box(
+    onInputToggleChange:(String)->Unit,
+    viewModel: KerawananViewModel
+) = Box(
         modifier = Modifier
             .fillMaxSize(),
+) {
+    MapViewWithCompose(
+        arcGISMap = map,
+        viewpoint = viewpoint,
+        onSingleTap = onSingleTap,
+    )
+    Row(
+        modifier = Modifier.align(Alignment.Center)
     ) {
-
-        MapViewWithCompose(
-            arcGISMap = map,
-            viewpoint = viewpoint,
-            onSingleTap = onSingleTap,
-        )
-        Row(
-            modifier = Modifier.align(Alignment.Center)
-        ) {
-            Text(text = mapStatusDesc)
-            if (mapStatus.value != LoadStatus.Loaded) {
-                CircularProgressIndicator()
-            }
-
+        Text(text = mapStatusDesc)
+        if (mapStatus.value != LoadStatus.Loaded) {
+            CircularProgressIndicator()
         }
-        if(mapStatus.value == LoadStatus.Loaded){
+
+    }
+    when {
+        (mapStatus.value == LoadStatus.Loaded)->{
             InputKoordinatCard(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                errorMessage = errorMessage,
-                toggleState = toggleState,
-                inputDesc = inputDesc,
+                viewModel = viewModel,
                 onToggleChange = { onInputToggleChange(it) },
                 locatorTask = locatorTask,
-                onProsesButtonClick = {}
+                onProsesButtonClick = {},
             )
         }
     }
 }
+
 
