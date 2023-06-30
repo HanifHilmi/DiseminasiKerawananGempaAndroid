@@ -69,8 +69,7 @@ fun InputKoordinatCard(
         },
         onLongFieldValueChanged = {
             viewModel.setLatLongFieldValue(long= it)
-
-        }
+        },
     )
 
 }
@@ -92,7 +91,6 @@ fun InputKoordinatCardContent(
             .padding(8.dp)
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5.dp))
             .padding(8.dp)
-
     ) {
 
         Row(modifier = Modifier

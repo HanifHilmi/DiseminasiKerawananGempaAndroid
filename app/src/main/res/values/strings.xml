@@ -18,4 +18,9 @@
     <string name="more_info">Info Selengkapnya</string>
     <string name="new_input">Input Baru</string>
     <string name="coordinatePointText">Koordinat point :</string>
+
+    <string name="result_gempatitle">Tingkat kerawanan Gempa\n</string>
+    <string name="result_gmtitle">Tingkat kerentanan Gerakan Tanah</string>
+    <string name="result_tsutitle">Tingkat kerawanan Tsunami</string>
+
 </resources>

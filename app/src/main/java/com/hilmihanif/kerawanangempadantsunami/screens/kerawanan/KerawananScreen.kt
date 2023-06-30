@@ -9,8 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,22 +31,21 @@ fun KerawananScreen(
 
     val localcontext = LocalContext.current
     val mapUiState by kerawananViewModel.mapUiState.collectAsState()
-    val map by remember { mutableStateOf(setBaseMap()) }
-    val mapStatus: State<LoadStatus> = map.loadStatus.collectAsState()
+    //val map by remember { mutableStateOf(setBaseMap()) }
+    //val mapStatus: State<LoadStatus> = map.loadStatus.collectAsState()
 
 
 
-    kerawananViewModel.updateMapDesc(mapStatus)
+    //kerawananViewModel.updateMapDesc(mapStatus)
+    kerawananViewModel.updateMapDesc(mapUiState.map.loadStatus.collectAsState())
     kerawananViewModel.setInitToggleState(toggleList)
     kerawananViewModel.setInputDesc(localcontext)
     kerawananViewModel.updateLocatorLoading()
 
-
-
     KerawananContent(
-        map = map,
+        map = kerawananViewModel.mapUiState.collectAsState().value.map,
         viewpoint = mapUiState.currentViewPoint,
-        mapStatus = mapStatus,
+        mapStatus = mapUiState.map.loadStatus.collectAsState(),
         locatorTask = mapUiState.locatorTask!!,
         mapStatusDesc = mapUiState.currentMapStatusDesc,
         onSingleTap = {point, mapView ->
@@ -57,6 +54,10 @@ fun KerawananScreen(
         onInputToggleChange= {
             kerawananViewModel.updateToggleState(select = it)
         },
+        onProcessButtonClick= {
+            kerawananViewModel.setOnProcessButtonClicked(prov = mapUiState.currentPinLocation?.provinsi ?: "")
+        },
+        isInputProcessNotDone = mapUiState.isInputProcessNotDone,
         viewModel= kerawananViewModel,
 
     )
@@ -72,9 +73,11 @@ fun KerawananContent(
     viewpoint:Viewpoint,
     mapStatus: State<LoadStatus>,
     mapStatusDesc:String,
+    isInputProcessNotDone:Boolean,
     locatorTask: LocatorTask,
     onSingleTap: (Point?,MapView) -> Unit,
     onInputToggleChange:(String)->Unit,
+    onProcessButtonClick:()->Unit,
     viewModel: KerawananViewModel
 ) = Box(
         modifier = Modifier
@@ -95,13 +98,19 @@ fun KerawananContent(
 
     }
     when {
-        (mapStatus.value == LoadStatus.Loaded)->{
+        (mapStatus.value == LoadStatus.Loaded) && isInputProcessNotDone -> {
             InputKoordinatCard(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 viewModel = viewModel,
                 onToggleChange = { onInputToggleChange(it) },
                 locatorTask = locatorTask,
-                onProsesButtonClick = {},
+                onProsesButtonClick = onProcessButtonClick,
+            )
+        }
+        (mapStatus.value == LoadStatus.Loaded) && !isInputProcessNotDone -> {
+            ResultCard(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                viewModel = viewModel,
             )
         }
     }

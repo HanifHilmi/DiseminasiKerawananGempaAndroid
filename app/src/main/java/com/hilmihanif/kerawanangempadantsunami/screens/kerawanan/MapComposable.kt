@@ -57,8 +57,6 @@ fun setBaseMap(): ArcGISMap {
 
     ArcGISEnvironment.apiKey = ApiKey.create(BuildConfig.API_KEY)
 
-
-
     val map = ArcGISMap(BasemapStyle.ArcGISImagery).apply {
         maxExtent = Envelope(91.404757,-8.65,109.586,7.956929, spatialReference = SpatialReference.wgs84())
         minScale = 10000000.0
