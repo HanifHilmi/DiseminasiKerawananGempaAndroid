@@ -48,7 +48,7 @@ suspend fun reverseGeocoding(
             outputSpatialReference = mMapView.spatialReference.value
         }).getOrNull()
 
-        Log.d(TEST_LOG, "geocode atrributes ${geocodeList}")
+        Log.d(TEST_LOG, "geocode atrributes $geocodeList")
 
     } while (geocodeList.isNullOrEmpty())
 

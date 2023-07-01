@@ -31,12 +31,8 @@ fun KerawananScreen(
 
     val localcontext = LocalContext.current
     val mapUiState by kerawananViewModel.mapUiState.collectAsState()
-    //val map by remember { mutableStateOf(setBaseMap()) }
-    //val mapStatus: State<LoadStatus> = map.loadStatus.collectAsState()
 
 
-
-    //kerawananViewModel.updateMapDesc(mapStatus)
     kerawananViewModel.updateMapDesc(mapUiState.map.loadStatus.collectAsState())
     kerawananViewModel.setInitToggleState(toggleList)
     kerawananViewModel.setInputDesc(localcontext)
@@ -49,6 +45,7 @@ fun KerawananScreen(
         locatorTask = mapUiState.locatorTask!!,
         mapStatusDesc = mapUiState.currentMapStatusDesc,
         onSingleTap = {point, mapView ->
+            kerawananViewModel.setInitMapView(mapView)
             kerawananViewModel.setOnTapPinLocation(point,mapView,toggleList)
         },
         onInputToggleChange= {

@@ -20,10 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import java.util.Locale
 
 @Composable
 fun MultiToggleButton(
@@ -73,7 +71,8 @@ fun MultiToggleButton(
                     toggleState,
                     color = textColor,
                     modifier = Modifier.padding(4.dp).align(Alignment.CenterVertically),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium
 
                 )
             }
@@ -84,7 +83,7 @@ fun MultiToggleButton(
 @Preview(showBackground = true)
 @Composable
 fun PreviewMultiToggle() {
-    val list = listOf<String>("Koordinat saat Ini","Tap melalui peta","Input Koordinat")
+    val list = listOf("Koordinat saat Ini","Tap melalui peta","Input Koordinat")
 
     MultiToggleButton(currentSelection = list[1] , toggleStates = list , onToggleChange = {})
 }

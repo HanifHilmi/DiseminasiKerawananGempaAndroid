@@ -151,7 +151,10 @@ fun InputKoordinatCardContent(
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(Color.Red)
                     )
-                    Text(text = inputCardUiState.currentErrorAlert.second)
+                    Text(
+                        text = inputCardUiState.currentErrorAlert.second,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
             if (locatorStatus != LoadStatus.Loaded){

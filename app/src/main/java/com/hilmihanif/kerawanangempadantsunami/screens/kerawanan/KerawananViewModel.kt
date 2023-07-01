@@ -5,12 +5,12 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcgismaps.ApiKey
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Point
-import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.geocode.LocatorTask
@@ -21,33 +21,37 @@ import com.hilmihanif.kerawanangempadantsunami.mapTools.addFaultModelLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerawananGempaLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerentananGerakanTanahLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.cekProvinsi
+import com.hilmihanif.kerawanangempadantsunami.mapTools.identifyKerawananLayers
 import com.hilmihanif.kerawanangempadantsunami.mapTools.removeLastPin
 import com.hilmihanif.kerawanangempadantsunami.mapTools.reverseGeocoding
 import com.hilmihanif.kerawanangempadantsunami.mapTools.setPin
 import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.pow
 
-class KerawananViewModel(): ViewModel() {
+class KerawananViewModel : ViewModel() {
     private lateinit var toggleList: List<String>
 
 
     private val _inputCardUiState = MutableStateFlow(InputCardUiState())
     private val _mapUiState= MutableStateFlow(MapUiState(setBaseMap()))
     private val _resultCardUiState = MutableStateFlow(ResultCardUiState())
+    private val _mapView = MutableLiveData<MapView>()
+
     val inputCardUiState= _inputCardUiState.asStateFlow()
     val mapUiState= _mapUiState.asStateFlow()
+
+
     val resultCardUiState = _resultCardUiState.asStateFlow()
 
 
 
 
-    fun setInputErrorAlert(errorPair:Pair<Boolean,String>?, durationSecond:Long? = null){
+    private fun setInputErrorAlert(errorPair:Pair<Boolean,String>?, durationSecond:Long? = null){
         viewModelScope.launch {
 
             if (errorPair != null){
@@ -82,21 +86,18 @@ class KerawananViewModel(): ViewModel() {
 
 
         when(_inputCardUiState.value.toggleButtonState){
-            toggleList.get(0)-> _inputCardUiState.update {
+            toggleList[0] -> _inputCardUiState.update {
                 it.copy(
-                    //isTapPinEnabled = false,
                     toggleButtonState = toggleList[0]
                 )
             }
-            toggleList.get(1) -> _inputCardUiState.update {
+            toggleList[1] -> _inputCardUiState.update {
                 it.copy(
-                    //isTapPinEnabled = true,
                     toggleButtonState = toggleList[1]
                 )
             }
-            toggleList.get(2)-> _inputCardUiState.update {
+            toggleList[2] -> _inputCardUiState.update {
                 it.copy(
-                    //isTapPinEnabled = false,
                     toggleButtonState = toggleList[2]
                 )
             }
@@ -180,6 +181,15 @@ class KerawananViewModel(): ViewModel() {
     }
 
     fun setOnTapPinLocation(point: Point?, mapView: MapView,toggleList: List<String>) {
+        /*
+        Log.d(TEST_LOG,"viewtreeobserver = ${mapView.viewTreeObserver}")
+        Log.d(TEST_LOG,"mapView = $mapView")
+        if (mapView.viewTreeObserver.isAlive && !_mapView.isInitialized){
+            _mapView.value = mapView
+            Log.d(TEST_LOG,"_mapView= ${_mapView.value} isInit:${_mapView.isInitialized}")
+        }
+         */
+
         if (_mapUiState.value.locatorTask != null){
             viewModelScope.launch {
                 val result = reverseGeocoding(point!!,mapView,_mapUiState.value.locatorTask!!)
@@ -274,7 +284,7 @@ class KerawananViewModel(): ViewModel() {
 
     }
 
-    fun setLocatorTask(){
+    private fun setLocatorTask(){
         val locatorTask = LocatorTask("https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer").apply {
             this.apiKey = ApiKey.create(BuildConfig.API_KEY)
         }
@@ -355,16 +365,61 @@ class KerawananViewModel(): ViewModel() {
                 totalKRBLayerCount = count
             )
         }
+        identifyLayers()
+    }
 
 
+    private fun identifyLayers(){
+        viewModelScope.launch {
 
-
-
+            if (_mapView.isInitialized){
+                val temp = identifyKerawananLayers(_mapView.value!!,_mapUiState.value.currentPinLocation!!.point,_mapUiState.value.totalKRBLayerCount)
+                _resultCardUiState.update {
+                    it.copy(
+                        identifiedLayerList = temp
+                    )
+                }
+            }
+        }
 
     }
 
-    fun setLayerLoadingStatus() {
-        TODO("Not yet implemented")
+
+    fun setInitMapView(mapView: MapView){
+        Log.d(TEST_LOG,"viewtreeobserver = ${mapView.viewTreeObserver}")
+        Log.d(TEST_LOG,"mapView = $mapView")
+        if (mapView.viewTreeObserver.isAlive && !_mapView.isInitialized){
+            _mapView.value = mapView
+            Log.d(TEST_LOG,"_mapView= ${_mapView.value} isInit:${_mapView.isInitialized}")
+        }
+    }
+
+
+    fun resetInput(){
+        _inputCardUiState.update {
+            InputCardUiState()
+        }
+        _resultCardUiState.update {
+            ResultCardUiState()
+        }
+
+        _mapUiState.update {
+            it.copy(
+                isInputProcessNotDone = true
+            )
+        }
+
+
+
+        if (_mapView.isInitialized){
+            for (i in (1.._mapUiState.value.totalKRBLayerCount)){
+                _mapUiState.value.map.operationalLayers.removeLast()
+                Log.d(TEST_LOG,"Last Layer removed")
+            }
+        }
+        removeLastPin()
+
+
     }
 
 
@@ -374,36 +429,5 @@ class KerawananViewModel(): ViewModel() {
     }
 }
 
-data class InputCardUiState(
-    val pinnedLocation: Location? = null,
-    val toggleButtonState:String = "",
-    val currentErrorAlert: Pair<Boolean,String> = false to "",
-    val currentInputDesc:String = "",
-    val currentReverseGeocoding: Map<String, Any?> = mapOf(),
-    val latTextFieldValue: TextFieldValue = TextFieldValue(""),
-    val longTextFieldValue: TextFieldValue = TextFieldValue("")
-)
-
-data class ResultCardUiState(
-    val selectedProv :String = "",
-    val isLayerLoaded :Boolean = false,
-    val gempaLoadStatus: StateFlow<LoadStatus> = MutableStateFlow(LoadStatus.NotLoaded),
-    val gmLoadStatus: StateFlow<LoadStatus> = MutableStateFlow(LoadStatus.NotLoaded),
-    val tsuLoadStatus: StateFlow<LoadStatus> = MutableStateFlow(LoadStatus.NotLoaded),
-    val currentProvinsi :String = "",
-)
-
-data class MapUiState(
-    val map:ArcGISMap,
-    val currentGeocodeResult: Map<String,Any?> = mapOf(),
-    val currentPinLocation: Location? = null,
-    val isInputProcessNotDone:Boolean = true,
-    val locatorStatus :LoadStatus = LoadStatus.NotLoaded,
-    val locatorTask: LocatorTask? = null,
-    val currentViewPoint : Viewpoint = Viewpoint(3.028, 98.905, 7000000.0),
-    val currentMapStatusDesc: String = "",
-    val totalKRBLayerCount:Int = 0
-
-    )
 
 
