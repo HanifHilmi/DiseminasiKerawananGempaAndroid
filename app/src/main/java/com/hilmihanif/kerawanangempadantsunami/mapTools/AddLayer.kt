@@ -133,7 +133,6 @@ suspend fun addKerentananGerakanTanahLayer(baseMap: ArcGISMap,url:String): State
             delay(200)
         }
         baseMap.operationalLayers.add(GM_LAYER_INDEX,it)
-//            testLayer = it
 
         return it.loadStatus
     }

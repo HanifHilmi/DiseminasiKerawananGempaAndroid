@@ -16,8 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -109,7 +110,7 @@ fun ResultCardContent(
 
                     )
                     Image(
-                        painter = painterResource(id = R.drawable.img_earthquake),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.img_earthquake),
                         contentDescription = "",
                         modifier = imageModifier,
                     )
@@ -126,7 +127,7 @@ fun ResultCardContent(
                         style = MaterialTheme.typography.labelSmall,
                         )
                     Image(
-                        painter = painterResource(id = R.drawable.img_groundmotion),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.img_groundmotion),
                         contentDescription = "",
                         modifier = imageModifier,
                     )
@@ -143,7 +144,7 @@ fun ResultCardContent(
                         style = MaterialTheme.typography.labelSmall,
                         )
                     Image(
-                        painter = painterResource(id = R.drawable.img_tsunami),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.img_tsunami),
                         contentDescription = "",
                         modifier = imageModifier,
                     )
@@ -190,7 +191,7 @@ fun ResultCardContent(
 @Composable
 fun PreviewResultCard() {
     ResultCardContent(
-        isLayerLoaded = false,
+        isLayerLoaded = true,
         gempaKRBresult = "Test",
         gmKRBResult = "Test",
         tsuKRBResult = "Test"

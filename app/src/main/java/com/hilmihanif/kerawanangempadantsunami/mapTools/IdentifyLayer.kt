@@ -9,9 +9,9 @@ import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
 import kotlinx.coroutines.delay
 
-suspend fun identifyKerawananLayers(mapView:MapView,mapPoint: Point?,layersCount:Int): List<Map<String, Any?>>{
+suspend fun identifyKerawananLayers(mapView:MapView,mapPoint: Point,layersCount:Int): List<Map<String, Any?>>{
     val mutableList = mutableListOf<Map<String,Any?>>()
-    val scrPoint = mapView.locationToScreen(mapPoint!!)
+    val scrPoint = mapView.locationToScreen(mapPoint)
 
     delay(200)
 

@@ -1,5 +1,8 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -89,15 +92,18 @@ fun KerawananContent(
         modifier = Modifier.align(Alignment.Center)
     ) {
         Text(text = mapStatusDesc)
-        if (mapStatus.value != LoadStatus.Loaded) {
+        AnimatedVisibility (mapStatus.value != LoadStatus.Loaded) {
             CircularProgressIndicator()
         }
 
     }
+    /*
     when {
         (mapStatus.value == LoadStatus.Loaded) && isInputProcessNotDone -> {
             InputKoordinatCard(
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .animateContentSize(),
                 viewModel = viewModel,
                 onToggleChange = { onInputToggleChange(it) },
                 locatorTask = locatorTask,
@@ -111,6 +117,39 @@ fun KerawananContent(
             )
         }
     }
+     */
+
+    AnimatedVisibility(
+        visible = mapStatus.value == LoadStatus.Loaded,
+        modifier = Modifier.align(Alignment.BottomCenter)
+    ) {
+        Crossfade(targetState = isInputProcessNotDone) {
+            when(it){
+                true ->{
+                    InputKoordinatCard(
+                        modifier = Modifier
+                            .animateContentSize(),
+                        viewModel = viewModel,
+                        onToggleChange = { onInputToggleChange(it) },
+                        locatorTask = locatorTask,
+                        onProsesButtonClick = onProcessButtonClick,
+                    )
+                }
+                false ->{
+                    ResultCard(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        viewModel = viewModel,
+                    )
+                }
+            }
+        }
+    }
+
+    AnimatedVisibility(visible = mapStatus.value == LoadStatus.Loaded){
+        MapControllerScreen(viewModel, isLayerIdentified = !isInputProcessNotDone)
+    }
 }
+
+
 
 

@@ -24,6 +24,7 @@ import com.hilmihanif.kerawanangempadantsunami.mapTools.cekProvinsi
 import com.hilmihanif.kerawanangempadantsunami.mapTools.identifyKerawananLayers
 import com.hilmihanif.kerawanangempadantsunami.mapTools.removeLastPin
 import com.hilmihanif.kerawanangempadantsunami.mapTools.reverseGeocoding
+import com.hilmihanif.kerawanangempadantsunami.mapTools.setBaseMap
 import com.hilmihanif.kerawanangempadantsunami.mapTools.setPin
 import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import kotlinx.coroutines.delay
@@ -371,7 +372,6 @@ class KerawananViewModel : ViewModel() {
 
     private fun identifyLayers(){
         viewModelScope.launch {
-
             if (_mapView.isInitialized){
                 val temp = identifyKerawananLayers(_mapView.value!!,_mapUiState.value.currentPinLocation!!.point,_mapUiState.value.totalKRBLayerCount)
                 _resultCardUiState.update {
@@ -418,8 +418,6 @@ class KerawananViewModel : ViewModel() {
             }
         }
         removeLastPin()
-
-
     }
 
 
