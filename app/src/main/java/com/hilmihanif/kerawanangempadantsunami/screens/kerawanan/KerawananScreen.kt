@@ -35,7 +35,6 @@ fun KerawananScreen(
     val localcontext = LocalContext.current
     val mapUiState by kerawananViewModel.mapUiState.collectAsState()
 
-
     kerawananViewModel.updateMapDesc(mapUiState.map.loadStatus.collectAsState())
     kerawananViewModel.setInitToggleState(toggleList)
     kerawananViewModel.setInputDesc(localcontext)
@@ -48,17 +47,21 @@ fun KerawananScreen(
         locatorTask = mapUiState.locatorTask!!,
         mapStatusDesc = mapUiState.currentMapStatusDesc,
         onSingleTap = {point, mapView ->
-            kerawananViewModel.setInitMapView(mapView)
+            //kerawananViewModel.setInitMapView(mapView)
             kerawananViewModel.setOnTapPinLocation(point,mapView,toggleList)
         },
+        onPinch = {kerawananViewModel.updateMapScale() },
         onInputToggleChange= {
             kerawananViewModel.updateToggleState(select = it)
         },
         onProcessButtonClick= {
             kerawananViewModel.setOnProcessButtonClicked(prov = mapUiState.currentPinLocation?.provinsi ?: "")
         },
+        setInitMapView = {
+                         kerawananViewModel.setInitMapView(it)
+        },
         isInputProcessNotDone = mapUiState.isInputProcessNotDone,
-        viewModel= kerawananViewModel,
+        viewModel= kerawananViewModel
 
     )
 }
@@ -75,7 +78,9 @@ fun KerawananContent(
     mapStatusDesc:String,
     isInputProcessNotDone:Boolean,
     locatorTask: LocatorTask,
+    setInitMapView:(MapView)->Unit,
     onSingleTap: (Point?,MapView) -> Unit,
+    onPinch: () -> Unit,
     onInputToggleChange:(String)->Unit,
     onProcessButtonClick:()->Unit,
     viewModel: KerawananViewModel
@@ -87,6 +92,8 @@ fun KerawananContent(
         arcGISMap = map,
         viewpoint = viewpoint,
         onSingleTap = onSingleTap,
+        onPinch = onPinch,
+        setInitMapView = setInitMapView
     )
     Row(
         modifier = Modifier.align(Alignment.Center)
@@ -146,7 +153,7 @@ fun KerawananContent(
     }
 
     AnimatedVisibility(visible = mapStatus.value == LoadStatus.Loaded){
-        MapControllerScreen(viewModel, isLayerIdentified = !isInputProcessNotDone)
+        MapControllerScreen(viewModel)
     }
 }
 

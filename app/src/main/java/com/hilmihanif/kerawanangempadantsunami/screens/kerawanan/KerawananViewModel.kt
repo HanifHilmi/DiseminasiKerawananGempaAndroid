@@ -26,6 +26,7 @@ import com.hilmihanif.kerawanangempadantsunami.mapTools.removeLastPin
 import com.hilmihanif.kerawanangempadantsunami.mapTools.reverseGeocoding
 import com.hilmihanif.kerawanangempadantsunami.mapTools.setBaseMap
 import com.hilmihanif.kerawanangempadantsunami.mapTools.setPin
+import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
 import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,11 +42,13 @@ class KerawananViewModel : ViewModel() {
     private val _inputCardUiState = MutableStateFlow(InputCardUiState())
     private val _mapUiState= MutableStateFlow(MapUiState(setBaseMap()))
     private val _resultCardUiState = MutableStateFlow(ResultCardUiState())
+
     private val _mapView = MutableLiveData<MapView>()
+    private val _mapScale = MutableStateFlow<Double>(0.0)
 
     val inputCardUiState= _inputCardUiState.asStateFlow()
     val mapUiState= _mapUiState.asStateFlow()
-
+    val mapScale = _mapScale.asStateFlow()
 
     val resultCardUiState = _resultCardUiState.asStateFlow()
 
@@ -313,6 +316,9 @@ class KerawananViewModel : ViewModel() {
         }
     }
 
+
+
+
     private fun setFaultLayer(){
         addFaultModelLayer(_mapUiState.value.map)
     }
@@ -386,8 +392,9 @@ class KerawananViewModel : ViewModel() {
 
 
     fun setInitMapView(mapView: MapView){
+
         Log.d(TEST_LOG,"viewtreeobserver = ${mapView.viewTreeObserver}")
-        Log.d(TEST_LOG,"mapView = $mapView")
+        Log.d(TEST_LOG,"mapView Init? = ${_mapView.isInitialized}")
         if (mapView.viewTreeObserver.isAlive && !_mapView.isInitialized){
             _mapView.value = mapView
             Log.d(TEST_LOG,"_mapView= ${_mapView.value} isInit:${_mapView.isInitialized}")
@@ -420,10 +427,32 @@ class KerawananViewModel : ViewModel() {
         removeLastPin()
     }
 
+    fun setMapScale(zoomScale: Float) {
+        val mapScale = (zoomScale.toDouble() * MAP_MAX_SCALE)
+        viewModelScope.launch {
+            if (_mapView.isInitialized){
+                _mapView.value!!.setViewpointScale(mapScale)
+                _mapScale.update {
+                    _mapView.value!!.mapScale.value
+                }
+            }
+        }
+    }
+
+    fun updateMapScale() {
+        if(_mapView.isInitialized){
+            _mapScale.update {
+                _mapView.value!!.mapScale.value
+            }
+        }
+    }
+
 
     init {
         setFaultLayer()
         setLocatorTask()
+
+
     }
 }
 

@@ -1,5 +1,6 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hilmihanif.kerawanangempadantsunami.R
+import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
@@ -35,10 +37,7 @@ fun ResultCard(
 ){
     val resultCardUiState by viewModel.resultCardUiState.collectAsState()
 
-    //viewModel.setLayerLoadingStatus()
     viewModel.updateLayerLoadStatus()
-
-
 
     ResultCardContent(
         isLayerLoaded = resultCardUiState.isLayerLoaded ,
@@ -156,12 +155,12 @@ fun ResultCardContent(
                 }
             }
             Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-                Button(modifier = Modifier.weight(1f),
+                Button(modifier = Modifier.weight(1f).padding(4.dp),
                     onClick = { /*TODO*/ }
                 ) {
                     Text(text = "info Lengkap")
                 }
-                Button(modifier = Modifier.weight(1f),
+                Button(modifier = Modifier.weight(1f).padding(4.dp),
                     onClick = onNewInputButtonClicked
                 ) {
                     Text(text = "Input Baru")
@@ -186,15 +185,17 @@ fun ResultCardContent(
 
     }
 }
-
-@Preview
+@Preview(name = "Dark Mode",uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Light Mode")
 @Composable
 fun PreviewResultCard() {
-    ResultCardContent(
-        isLayerLoaded = true,
-        gempaKRBresult = "Test",
-        gmKRBResult = "Test",
-        tsuKRBResult = "Test"
-    )
+    KerawananGempaDanTsunamiTheme {
+        ResultCardContent(
+            isLayerLoaded = true,
+            gempaKRBresult = "Test",
+            gmKRBResult = "Test",
+            tsuKRBResult = "Test"
+        )
+    }
 
 }

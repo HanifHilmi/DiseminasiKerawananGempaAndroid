@@ -5,6 +5,8 @@ import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.tasks.geocode.LocatorTask
+import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
+import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MIN_SCALE
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -35,8 +37,9 @@ data class MapUiState(
     val isInputProcessNotDone:Boolean = true,
     val locatorStatus : LoadStatus = LoadStatus.NotLoaded,
     val locatorTask: LocatorTask? = null,
-    val currentViewPoint : Viewpoint = Viewpoint(3.028, 98.905, 7e6),
+    val currentViewPoint : Viewpoint = Viewpoint(3.028, 98.905, 5 * MAP_MAX_SCALE),
     val currentMapStatusDesc: String = "",
-    val totalKRBLayerCount:Int = 0
+    val totalKRBLayerCount:Int = 0,
+    val mapScale:Double = (MAP_MAX_SCALE+ MAP_MIN_SCALE)/2
 
 )

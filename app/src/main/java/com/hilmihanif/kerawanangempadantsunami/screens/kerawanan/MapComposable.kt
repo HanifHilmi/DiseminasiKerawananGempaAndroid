@@ -17,7 +17,9 @@ import kotlinx.coroutines.launch
 fun MapViewWithCompose(
     arcGISMap: ArcGISMap,
     viewpoint: Viewpoint,
+    setInitMapView:(MapView)->Unit,
     onSingleTap: (Point?, MapView) -> Unit,
+    onPinch: () -> Unit
 ) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -29,9 +31,16 @@ fun MapViewWithCompose(
             MapView(context).also { mapView ->
                 lifecycleOwner.lifecycle.addObserver(mapView)
                 mapView.map = arcGISMap
+                setInitMapView(mapView)
                 lifecycleOwner.lifecycleScope.launch {
                     mapView.onSingleTapConfirmed.collect{
                         onSingleTap(it.mapPoint,mapView)
+                    }
+                }
+
+                lifecycleOwner.lifecycleScope.launch {
+                    mapView.onPan.collect{
+                        onPinch()
                     }
                 }
             }

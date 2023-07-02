@@ -11,13 +11,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,52 +34,70 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.layers.Layer
+import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.utils.FAULT_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
+import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
 import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
 
 
 @Composable
 fun MapControllerScreen(
     viewModel: KerawananViewModel,
-    isLayerIdentified:Boolean
+    modifier: Modifier = Modifier,
 ) {
 
-    val state = viewModel.mapUiState.collectAsState()
+    val state by viewModel.mapUiState.collectAsState()
 
+    val mapScale by viewModel.mapScale.collectAsState()
+
+    viewModel.updateMapScale()
     MapControllerContent(
         //operationalLayers = baseMap.operationalLayers,
-        operationalLayers = state.value.map.operationalLayers,
-        isLayerIdentified = isLayerIdentified
+        operationalLayers = state.map.operationalLayers,
+        zoomScale =(mapScale/ MAP_MAX_SCALE).toFloat() ,
+        onZoomSliderChanged = {
+            viewModel.setMapScale(it)
+        },
+        modifier = modifier
     )
 }
+
 
 @Composable
 fun MapControllerContent(
     modifier: Modifier = Modifier,
     operationalLayers: MutableList<Layer>,
-    isLayerIdentified:Boolean
+    zoomScale:Float,
+    onZoomSliderChanged:(Float)->Unit = {}
 ) = Box(
         modifier = modifier.fillMaxSize(),
 ){
     var isLayersListExpanded by rememberSaveable { mutableStateOf(false)}
+    var isZoomSliderExpanded by rememberSaveable { mutableStateOf(false)}
     var arrowAngle by rememberSaveable { mutableStateOf(0f)}
     val maxWidth = if(isLayersListExpanded) .35f else .3f
 
 
-    Column(modifier =
-    Modifier
-        .padding(16.dp)
-        .align(Alignment.TopEnd)
-        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(4.dp))
-        .padding(8.dp)
-        .fillMaxWidth(maxWidth)
-        .clickable {}
-        .animateContentSize(),
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .align(Alignment.TopEnd)
+            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(4.dp))
+            .padding(8.dp)
+            .fillMaxWidth(maxWidth)
+            .clickable {}
+            .animateContentSize(),
     ){
         Row(modifier=Modifier.fillMaxWidth() ,
             horizontalArrangement = Arrangement.SpaceBetween){
@@ -130,15 +152,82 @@ fun MapControllerContent(
                 }
 
             }
-            //isLayersListExpanded = false
+        }
+    }
 
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .align(Alignment.TopStart)
+            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(CornerSize(50)))
+            .padding(8.dp)
+            .clickable {}
+            .animateContentSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        AnimatedVisibility(visible = isZoomSliderExpanded) {
+            Column{
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.zoom_out_24px),
+                    contentDescription ="",
+                    modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded }
+                )
+                VerticalSlider(
+                    sliderValue = zoomScale,
+                    onZoomSliderChanged = onZoomSliderChanged
+                )
+            }
 
         }
+        Image(
+            imageVector = ImageVector.vectorResource(id = R.drawable.zoom_in_24px),
+            contentDescription ="",
+            modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded }
+        )
+
+
     }
 
 
 
 
+
+}
+
+@Composable
+fun VerticalSlider(
+    modifier :Modifier = Modifier,
+    sliderValue :Float,
+    onZoomSliderChanged:(Float) -> Unit
+) {
+    Slider(
+        value = sliderValue,
+        onValueChange ={
+            onZoomSliderChanged(it)
+        },
+        valueRange = 0f..10f,
+        modifier = modifier
+            .graphicsLayer {
+                rotationZ = 270f
+                transformOrigin = TransformOrigin(0f, 0f)
+            }
+            .layout { measurable, constraints ->
+                val placeable = measurable.measure(
+                    Constraints(
+                        minWidth = constraints.minHeight,
+                        maxWidth = constraints.maxHeight,
+                        minHeight = constraints.minWidth,
+                        maxHeight = constraints.maxHeight,
+                    )
+                )
+                layout(placeable.height, placeable.width) {
+                    placeable.place(-placeable.width, 0)
+                }
+            }
+            .width(120.dp)
+            .height(30.dp)
+    )
 
 }
 
@@ -148,9 +237,9 @@ fun MapControllerContent(
 @Composable
 fun PrevMapControl() {
 
-    val mutableList = mutableListOf<Layer>()
     MapControllerContent(
-        operationalLayers = mutableListOf<Layer>(), isLayerIdentified = false
+        operationalLayers = mutableListOf(),
+        zoomScale = 7f
     )
 
 }
