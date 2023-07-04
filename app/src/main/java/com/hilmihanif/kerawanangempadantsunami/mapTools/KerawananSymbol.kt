@@ -5,11 +5,7 @@ import androidx.compose.ui.graphics.toArgb
 import com.arcgismaps.Color
 import com.arcgismaps.mapping.symbology.SimpleFillSymbol
 import com.arcgismaps.mapping.symbology.SimpleFillSymbolStyle
-import com.hilmihanif.kerawanangempadantsunami.ui.theme.KrbRendah
-import com.hilmihanif.kerawanangempadantsunami.ui.theme.KrbRombakan
-import com.hilmihanif.kerawanangempadantsunami.ui.theme.KrbSangatRendah
-import com.hilmihanif.kerawanangempadantsunami.ui.theme.KrbSedang
-import com.hilmihanif.kerawanangempadantsunami.ui.theme.KrbTinggi
+import com.hilmihanif.kerawanangempadantsunami.ui.theme.KrbColor
 
 object KerawananSymbol {
 
@@ -17,14 +13,13 @@ object KerawananSymbol {
     fun sangatRendah(): SimpleFillSymbol {
         return SimpleFillSymbol(
             SimpleFillSymbolStyle.Solid,
-            //Color(context.getColor(R.color.krb_sangatrendah)) ,
-            Color(KrbSangatRendah.toArgb()),
+            Color(KrbColor.KrbSangatRendah.toArgb()),
             null,
         )
     }
     fun rendah(): SimpleFillSymbol {
         return SimpleFillSymbol(SimpleFillSymbolStyle.Solid,
-        Color(KrbRendah.toArgb()),
+            Color(KrbColor.KrbRendah.toArgb()),
         null
         )
     }
@@ -32,7 +27,7 @@ object KerawananSymbol {
     fun menengah(): SimpleFillSymbol {
         return SimpleFillSymbol(
             SimpleFillSymbolStyle.Solid,
-            Color(KrbSedang.toArgb()),
+            Color(KrbColor.KrbSedang.toArgb()),
 
             )
     }
@@ -40,7 +35,7 @@ object KerawananSymbol {
     fun tinggi():SimpleFillSymbol{
         return SimpleFillSymbol(
             SimpleFillSymbolStyle.Solid,
-            Color(KrbTinggi.toArgb()),
+            Color(KrbColor.KrbTinggi.toArgb()),
             null
         )
     }
@@ -48,7 +43,7 @@ object KerawananSymbol {
     fun rombakan():SimpleFillSymbol{
         return SimpleFillSymbol(
             SimpleFillSymbolStyle.Solid,
-            Color(KrbRombakan.toArgb()),
+            Color(KrbColor.KrbRombakan.toArgb()),
             null
         )
     }
@@ -56,7 +51,7 @@ object KerawananSymbol {
     fun others():SimpleFillSymbol{
         return SimpleFillSymbol(
             SimpleFillSymbolStyle.Solid,
-            Color(KrbRombakan.toArgb()),
+            Color(KrbColor.KrbRombakan.toArgb()),
             null
         )
     }

@@ -3,7 +3,9 @@ package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,7 +64,6 @@ fun KerawananScreen(
         },
         isInputProcessNotDone = mapUiState.isInputProcessNotDone,
         viewModel= kerawananViewModel
-
     )
 }
 
@@ -104,56 +105,43 @@ fun KerawananContent(
         }
 
     }
-    /*
-    when {
-        (mapStatus.value == LoadStatus.Loaded) && isInputProcessNotDone -> {
-            InputKoordinatCard(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .animateContentSize(),
-                viewModel = viewModel,
-                onToggleChange = { onInputToggleChange(it) },
-                locatorTask = locatorTask,
-                onProsesButtonClick = onProcessButtonClick,
-            )
-        }
-        (mapStatus.value == LoadStatus.Loaded) && !isInputProcessNotDone -> {
-            ResultCard(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                viewModel = viewModel,
-            )
-        }
-    }
-     */
 
-    AnimatedVisibility(
-        visible = mapStatus.value == LoadStatus.Loaded,
-        modifier = Modifier.align(Alignment.BottomCenter)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Crossfade(targetState = isInputProcessNotDone) {
-            when(it){
-                true ->{
-                    InputKoordinatCard(
-                        modifier = Modifier
-                            .animateContentSize(),
-                        viewModel = viewModel,
-                        onToggleChange = { onInputToggleChange(it) },
-                        locatorTask = locatorTask,
-                        onProsesButtonClick = onProcessButtonClick,
-                    )
-                }
-                false ->{
-                    ResultCard(
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        viewModel = viewModel,
-                    )
+        AnimatedVisibility(
+            visible = mapStatus.value == LoadStatus.Loaded,
+            modifier = Modifier.weight(1f)
+        ){
+            MapControllerScreen(viewModel)
+        }
+
+        AnimatedVisibility(
+            visible = mapStatus.value == LoadStatus.Loaded,
+            modifier = Modifier//.align(Alignment.BottomCenter)
+        ) {
+            Crossfade(targetState = isInputProcessNotDone) {
+                when(it){
+                    true ->{
+                        InputKoordinatCard(
+                            modifier = Modifier
+                                .animateContentSize(),
+                            viewModel = viewModel,
+                            onToggleChange = { onInputToggleChange(it) },
+                            locatorTask = locatorTask,
+                            onProsesButtonClick = onProcessButtonClick,
+                        )
+                    }
+                    false ->{
+                        ResultCard(
+                            modifier = Modifier.animateContentSize(),
+                            viewModel = viewModel,
+                        )
+                    }
                 }
             }
         }
-    }
-
-    AnimatedVisibility(visible = mapStatus.value == LoadStatus.Loaded){
-        MapControllerScreen(viewModel)
     }
 }
 

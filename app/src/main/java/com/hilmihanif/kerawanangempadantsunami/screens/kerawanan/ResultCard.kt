@@ -1,7 +1,7 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -84,8 +85,8 @@ fun ResultCardContent(
             .fillMaxWidth()
             .padding(8.dp)
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(12.dp))
-//            .padding(8.dp)
-//            .background(MaterialTheme.colorScheme.background)
+            .animateContentSize()
+
     ) {
         if (isLayerLoaded){
             Text(
@@ -108,7 +109,7 @@ fun ResultCardContent(
                         style = MaterialTheme.typography.labelSmall,
 
                     )
-                    Image(
+                    Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.img_earthquake),
                         contentDescription = "",
                         modifier = imageModifier,
@@ -125,7 +126,7 @@ fun ResultCardContent(
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelSmall,
                         )
-                    Image(
+                    Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.img_groundmotion),
                         contentDescription = "",
                         modifier = imageModifier,
@@ -142,7 +143,7 @@ fun ResultCardContent(
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelSmall,
                         )
-                    Image(
+                    Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.img_tsunami),
                         contentDescription = "",
                         modifier = imageModifier,

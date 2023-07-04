@@ -1,15 +1,15 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,8 +18,10 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.layers.Layer
 import com.hilmihanif.kerawanangempadantsunami.R
+import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
 import com.hilmihanif.kerawanangempadantsunami.utils.FAULT_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
@@ -81,40 +84,41 @@ fun MapControllerContent(
     zoomScale:Float,
     onZoomSliderChanged:(Float)->Unit = {}
 ) = Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 300.dp),
 ){
     var isLayersListExpanded by rememberSaveable { mutableStateOf(false)}
     var isZoomSliderExpanded by rememberSaveable { mutableStateOf(false)}
+    var isLegendDialogShowed by rememberSaveable { mutableStateOf(false) }
     var arrowAngle by rememberSaveable { mutableStateOf(0f)}
     val maxWidth = if(isLayersListExpanded) .35f else .3f
 
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(16.dp)
             .align(Alignment.TopEnd)
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(4.dp))
             .padding(8.dp)
             .fillMaxWidth(maxWidth)
-            .clickable {}
+            .clickable {
+                isLayersListExpanded = !isLayersListExpanded
+                arrowAngle = (arrowAngle + 180) % 360f}
             .animateContentSize(),
     ){
-        Row(modifier=Modifier.fillMaxWidth() ,
+        Row(modifier=modifier.fillMaxWidth() ,
             horizontalArrangement = Arrangement.SpaceBetween){
             Text(
                 text = "Layers",
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.labelMedium,
                 //modifier = Modifier.width(100.dp)
             )
-            Image(
+            Icon(
                 modifier = Modifier
-                    .clickable {
-                        isLayersListExpanded = !isLayersListExpanded
-                        arrowAngle = (arrowAngle + 180) % 360f
-                    }
                     .rotate(arrowAngle),
                 imageVector = Icons.Default.ArrowDropDown,
-
+                tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "Expand layers"
             )
         }
@@ -156,7 +160,7 @@ fun MapControllerContent(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(16.dp)
             .align(Alignment.TopStart)
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(CornerSize(50)))
@@ -165,13 +169,13 @@ fun MapControllerContent(
             .animateContentSize(),
         verticalArrangement = Arrangement.Center
     ) {
-
         AnimatedVisibility(visible = isZoomSliderExpanded) {
             Column{
-                Image(
+                Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.zoom_out_24px),
                     contentDescription ="",
-                    modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded }
+                    modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded },
+                    tint = MaterialTheme.colorScheme.surfaceTint
                 )
                 VerticalSlider(
                     sliderValue = zoomScale,
@@ -180,17 +184,41 @@ fun MapControllerContent(
             }
 
         }
-        Image(
+        Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.zoom_in_24px),
             contentDescription ="",
-            modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded }
+            modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded },
+            //tint = MaterialTheme.colorScheme.surfaceTint
         )
 
 
     }
 
 
-
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .align(Alignment.BottomEnd)
+            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(CornerSize(50)))
+            .padding(8.dp)
+            .clickable {}
+            .animateContentSize(),
+    ){
+        Icon(
+            imageVector = Icons.Outlined.Info,
+            contentDescription = "",
+            modifier = Modifier.clickable {
+               isLegendDialogShowed = true
+            }
+        )
+    }
+    if(isLegendDialogShowed){
+        MapLegendDialog(
+            onClose = {
+                isLegendDialogShowed = false
+            }
+        )
+    }
 
 
 }
@@ -233,13 +261,15 @@ fun VerticalSlider(
 
 
 
-@Preview(showBackground = false)
+@Preview(name = "Dark Mode",uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Light Mode")
 @Composable
 fun PrevMapControl() {
-
-    MapControllerContent(
-        operationalLayers = mutableListOf(),
-        zoomScale = 7f
-    )
+    KerawananGempaDanTsunamiTheme {
+        MapControllerContent(
+            operationalLayers = mutableListOf(),
+            zoomScale = 7f
+        )
+    }
 
 }

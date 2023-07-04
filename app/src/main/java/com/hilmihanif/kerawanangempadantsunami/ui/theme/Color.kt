@@ -12,8 +12,12 @@ val Pink40 = Color(0xFF7D5260)
 
 val FaultColor = Color(0xFFFF9800)
 
-val KrbSangatRendah = Color(0xFFd0def2)
-val KrbRendah = Color(0xFFaad590)
-val KrbSedang = Color(0xFFf9f290)
-val KrbTinggi = Color(0xFFffa4bf)
-val KrbRombakan = Color(0xFF820200)
+object KrbColor {
+    val KrbSangatRendah = Color(0xFFd0def2)
+    val KrbRendah = Color(0xFFaad590)
+    val KrbSedang = Color(0xFFf9f290)
+    val KrbTinggi = Color(0xFFffa4bf)
+    val KrbRombakan = Color(0xFF820200)
+
+    val krbColorList = listOf(KrbSangatRendah, KrbRendah, KrbSedang, KrbTinggi)
+}

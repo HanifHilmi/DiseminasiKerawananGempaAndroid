@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
+package com.hilmihanif.kerawanangempadantsunami.mapTools
 
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point

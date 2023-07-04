@@ -17,6 +17,7 @@ import com.arcgismaps.tasks.geocode.LocatorTask
 import com.hilmihanif.kerawanangempadantsunami.BuildConfig
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.mapTools.KerawananUrls
+import com.hilmihanif.kerawanangempadantsunami.mapTools.Location
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addFaultModelLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerawananGempaLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerentananGerakanTanahLayer
@@ -238,7 +239,7 @@ class KerawananViewModel : ViewModel() {
 
     }
 
-    private fun updateCurrentPinnedLocation(location :Location? = null){
+    private fun updateCurrentPinnedLocation(location : Location? = null){
         if (location != null){
             _mapUiState.update {
                 it.copy(

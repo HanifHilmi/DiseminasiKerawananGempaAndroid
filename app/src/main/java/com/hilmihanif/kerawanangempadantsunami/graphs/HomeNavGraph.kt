@@ -16,7 +16,7 @@ fun HomeNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = BottomBarScreen.Profil.route
+        startDestination = BottomBarScreen.Beranda.route
     ) {
         composable(route = BottomBarScreen.Profil.route) {
             ScreenContent(
@@ -33,10 +33,6 @@ fun HomeNavGraph(navController: NavHostController) {
             )
         }
         composable(route = BottomBarScreen.Kerawanan.route) {
-//            ScreenContent(
-//                name = BottomBarScreen.Kerawanan.route,
-//                onClick = { }
-//            )
             KerawananScreen()
         }
         detailsNavGraph(navController = navController)

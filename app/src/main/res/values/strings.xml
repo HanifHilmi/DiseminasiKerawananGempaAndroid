@@ -8,6 +8,14 @@
         <item>Input Koordinat</item>
     </string-array>
 
+    <string-array name="keterangan_legenda">
+        <item>Zona Rawan Gempabumi Sangat Rendah</item>
+        <item>Zona Rawan Gempabumi Rendah</item>
+        <item>Zona Rawan Gempabumi Menengah</item>
+        <item>Zona Rawan Gempabumi Tinggi</item>
+    </string-array>
+    <string name="keterangan_patahan">Sesar/Patahan</string>
+
     <string name="lorem10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, natus!</string>
     <string name="lorem20">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis consequuntur dicta eveniet in ipsum molestias nemo quia similique? Illum, rerum!</string>
 

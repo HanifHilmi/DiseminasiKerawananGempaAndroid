@@ -5,6 +5,7 @@ import com.arcgismaps.LoadStatus
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.tasks.geocode.LocatorTask
+import com.hilmihanif.kerawanangempadantsunami.mapTools.Location
 import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
 import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MIN_SCALE
 import kotlinx.coroutines.flow.MutableStateFlow
