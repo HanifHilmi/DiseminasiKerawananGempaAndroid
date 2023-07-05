@@ -47,21 +47,24 @@ import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.layers.Layer
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
+import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.utils.FAULT_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
+import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
 import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
 
 
+
 @Composable
 fun MapControllerScreen(
-    viewModel: KerawananViewModel,
     modifier: Modifier = Modifier,
+    currentScreen:String,
+    viewModel: KerawananViewModel
 ) {
 
     val state by viewModel.mapUiState.collectAsState()
-
     val mapScale by viewModel.mapScale.collectAsState()
 
     viewModel.updateMapScale()
@@ -72,6 +75,7 @@ fun MapControllerScreen(
         onZoomSliderChanged = {
             viewModel.setMapScale(it)
         },
+        currentScreen = currentScreen,
         modifier = modifier
     )
 }
@@ -82,6 +86,7 @@ fun MapControllerContent(
     modifier: Modifier = Modifier,
     operationalLayers: MutableList<Layer>,
     zoomScale:Float,
+    currentScreen: String,
     onZoomSliderChanged:(Float)->Unit = {}
 ) = Box(
         modifier = modifier
@@ -195,29 +200,36 @@ fun MapControllerContent(
     }
 
 
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .align(Alignment.BottomEnd)
-            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(CornerSize(50)))
-            .padding(8.dp)
-            .clickable {}
-            .animateContentSize(),
-    ){
-        Icon(
-            imageVector = Icons.Outlined.Info,
-            contentDescription = "",
-            modifier = Modifier.clickable {
-               isLegendDialogShowed = true
+    when (currentScreen) {
+        KERAWANAN_SCREEN -> {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.BottomEnd)
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(CornerSize(50)))
+                    .padding(8.dp)
+                    .clickable {}
+                    .animateContentSize(),
+            ){
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = "",
+                    modifier = Modifier.clickable {
+                        isLegendDialogShowed = true
+                    }
+                )
+                if(isLegendDialogShowed){
+                    MapLegendDialog(
+                        onClose = {
+                            isLegendDialogShowed = false
+                        }
+                    )
+                }
             }
-        )
-    }
-    if(isLegendDialogShowed){
-        MapLegendDialog(
-            onClose = {
-                isLegendDialogShowed = false
-            }
-        )
+        }
+        BERANDA_SCREEN ->{
+
+        }
     }
 
 
@@ -268,7 +280,8 @@ fun PrevMapControl() {
     KerawananGempaDanTsunamiTheme {
         MapControllerContent(
             operationalLayers = mutableListOf(),
-            zoomScale = 7f
+            zoomScale = 7f,
+            currentScreen = KERAWANAN_SCREEN
         )
     }
 

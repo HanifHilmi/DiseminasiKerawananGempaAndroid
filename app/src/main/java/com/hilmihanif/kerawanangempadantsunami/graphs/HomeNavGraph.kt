@@ -9,6 +9,8 @@ import androidx.navigation.compose.navigation
 import com.hilmihanif.kerawanangempadantsunami.BottomBarScreen
 import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananScreen
 import com.hilmihanif.kerawanangempadantsunami.screens.ScreenContent
+import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
+import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 
 
 @Composable
@@ -16,7 +18,7 @@ fun HomeNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = BottomBarScreen.Beranda.route
+        startDestination = BottomBarScreen.Profil.route
     ) {
         composable(route = BottomBarScreen.Profil.route) {
             ScreenContent(
@@ -26,14 +28,16 @@ fun HomeNavGraph(navController: NavHostController) {
                 }
             )
         }
+
         composable(route = BottomBarScreen.Beranda.route) {
-            ScreenContent(
-                name = BottomBarScreen.Beranda.route,
-                onClick = { }
-            )
+//            ScreenContent(
+//                name = BottomBarScreen.Beranda.route,
+//                onClick = { }
+//            )
+            KerawananScreen(BERANDA_SCREEN)
         }
         composable(route = BottomBarScreen.Kerawanan.route) {
-            KerawananScreen()
+            KerawananScreen(KERAWANAN_SCREEN)
         }
         detailsNavGraph(navController = navController)
     }

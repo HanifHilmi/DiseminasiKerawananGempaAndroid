@@ -13,3 +13,6 @@ val PROGRESS_TSU_LIMIT = 100
 
 val MAP_MAX_SCALE = 10e5
 val MAP_MIN_SCALE = 10e6
+
+val BERANDA_SCREEN = "beranda"
+val KERAWANAN_SCREEN = "kerawanan"

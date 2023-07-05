@@ -79,7 +79,7 @@ fun RowScope.AddItem(
         },
         icon = {
             Icon(
-                imageVector = screen.icon,
+                imageVector = screen.icon!!,
                 contentDescription = "Navigation Icon"
             )
         },

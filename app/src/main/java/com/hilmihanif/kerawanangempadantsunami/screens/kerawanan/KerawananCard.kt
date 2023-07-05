@@ -87,11 +87,12 @@ fun InputKoordinatCardContent(
     toggleList = stringArrayResource(id = R.array.toggle_list).toList()
     Card(
         modifier = modifier
-            .fillMaxWidth()
             .padding(8.dp)
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(5.dp))
-            .padding(8.dp)
+            .padding(8.dp),
+
     ) {
+
 
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -140,12 +141,12 @@ fun InputKoordinatCardContent(
             Text(
                 text = inputCardUiState.currentInputDesc,
                 modifier = Modifier
-                    .padding(all = 8.dp)
                     .fillMaxWidth()
+                    .padding(all = 8.dp)
             )
 
             if(inputCardUiState.currentErrorAlert.first){
-                Row {
+                Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Image(
                         imageVector = Icons.Default.Warning,
                         contentDescription = null,
@@ -161,7 +162,7 @@ fun InputKoordinatCardContent(
                 LinearProgressIndicator(
                     modifier= Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(all = 8.dp)
                 )
             }
 
@@ -254,7 +255,7 @@ fun PreviewCard() {
         currentErrorAlert = true to "TEST 123",
     )
     InputKoordinatCardContent(
-        locatorStatus = LoadStatus.Loaded,
+        locatorStatus = LoadStatus.Loading,
         inputCardUiState = previewState,
         )
 
