@@ -1,6 +1,5 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
@@ -17,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,6 +26,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.hilmihanif.kerawanangempadantsunami.R
+import com.hilmihanif.kerawanangempadantsunami.screens.beranda.BerandaCardScreen
 import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 
@@ -35,7 +34,8 @@ import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 @Composable
 fun KerawananScreen(
     currentScreen :String,
-    kerawananViewModel: KerawananViewModel = viewModel()
+    kerawananViewModel: KerawananViewModel = viewModel(),
+    onClick:()-> Unit
 ) {
     val toggleList = stringArrayResource(id = R.array.toggle_list).toList()
 
@@ -108,8 +108,6 @@ fun KerawananContent(
         modifier = Modifier
             .fillMaxSize(),
 ) {
-
-    val configuration = LocalConfiguration.current
     MapViewWithCompose(
         arcGISMap = map,
         viewpoint = viewpoint,
@@ -125,103 +123,56 @@ fun KerawananContent(
 
     }
 
-    when(configuration.orientation){
-        Configuration.ORIENTATION_PORTRAIT -> {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                AnimatedVisibility(
-                    visible = mapStatus.value == LoadStatus.Loaded,
-                    modifier = Modifier.weight(1f)
-                ){
-                    MapControllerScreen(
-                        viewModel = viewModel,
-                        currentScreen = currentScreen
-                    )
-                }
 
-                when(currentScreen){
-                    KERAWANAN_SCREEN->{
-                        AnimatedVisibility(
-                            visible = (mapStatus.value == LoadStatus.Loaded),
-                            modifier = Modifier//.align(Alignment.BottomCenter)
-                        ) {
-                            Crossfade(targetState = isInputProcessNotDone) {
-                                when(it){
-                                    true ->{
-                                        InputKoordinatCard(
-                                            modifier = Modifier
-                                                .animateContentSize(),
-                                            viewModel = viewModel,
-                                            onToggleChange = { onInputToggleChange(it) },
-                                            locatorTask = locatorTask,
-                                            onProsesButtonClick = onProcessButtonClick,
-                                        )
-                                    }
-                                    false ->{
-                                        ResultCard(
-                                            modifier = Modifier.animateContentSize(),
-                                            viewModel = viewModel,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        AnimatedVisibility(
+            visible = mapStatus.value == LoadStatus.Loaded,
+            modifier = Modifier.weight(1f)
+        ){
+            MapControllerScreen(
+                viewModel = viewModel,
+                currentScreen = currentScreen
+            )
         }
-        else ->{
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                AnimatedVisibility(
-                    visible = mapStatus.value == LoadStatus.Loaded,
-                    modifier = Modifier.weight(1f)
-                ){
-                    MapControllerScreen(
-                        viewModel = viewModel,
-                        currentScreen = currentScreen
-                    )
-                }
 
-                when(currentScreen){
-                    KERAWANAN_SCREEN->{
-                        AnimatedVisibility(
-                            visible = (mapStatus.value == LoadStatus.Loaded),
-                            modifier = Modifier//.align(Alignment.BottomCenter)
-                        ) {
-                            Crossfade(targetState = isInputProcessNotDone) {
-                                when(it){
-                                    true ->{
-                                        InputKoordinatCard(
-                                            modifier = Modifier
-                                                .animateContentSize(),
-                                            viewModel = viewModel,
-                                            onToggleChange = { onInputToggleChange(it) },
-                                            locatorTask = locatorTask,
-                                            onProsesButtonClick = onProcessButtonClick,
-                                        )
-                                    }
-                                    false ->{
-                                        ResultCard(
-                                            modifier = Modifier.animateContentSize(),
-                                            viewModel = viewModel,
-                                        )
-                                    }
-                                }
+        AnimatedVisibility(
+            visible = (mapStatus.value == LoadStatus.Loaded),
+            modifier = Modifier
+        ) {
+            when(currentScreen){
+                KERAWANAN_SCREEN->{
+                    Crossfade(targetState = isInputProcessNotDone) {
+                        when(it){
+                            true ->{
+                                InputKoordinatCard(
+                                    modifier = Modifier
+                                        .animateContentSize(),
+                                    viewModel = viewModel,
+                                    onToggleChange = { onInputToggleChange(it) },
+                                    locatorTask = locatorTask,
+                                    onProsesButtonClick = onProcessButtonClick,
+                                )
+                            }
+                            false ->{
+                                ResultCard(
+                                    modifier = Modifier.animateContentSize(),
+                                    viewModel = viewModel,
+                                )
                             }
                         }
                     }
+
+                }
+                BERANDA_SCREEN->{
+                    BerandaCardScreen(viewModel = viewModel)
                 }
             }
         }
     }
-
-
-
 }
 
 

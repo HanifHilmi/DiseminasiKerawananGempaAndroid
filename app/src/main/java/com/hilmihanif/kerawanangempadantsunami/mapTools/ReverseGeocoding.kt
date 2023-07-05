@@ -122,6 +122,34 @@ fun cekProvinsi(map:Map<String,Any?>):Pair<String,Boolean>{
     }
 }
 
+fun setGempaPin(
+    mapView:MapView,
+    wgs84Point: Point?,
+    setGraphicsOverlay: (GraphicsOverlay) -> Unit
+){
+    val context = mapView.context
+    val mGraphicsOverlay = GraphicsOverlay()
+    mGraphicsOverlay.graphics.let {graphicList ->
+
+        val pinImageBitmap = BitmapFactory.decodeResource(context.resources,R.drawable.dot_animated)
+            .toDrawable(context.resources)
+
+
+
+        val pinSize = 50f
+        val gempaLocationSymbol = PictureMarkerSymbol.createWithImage(pinImageBitmap).apply {
+            height = pinSize
+            width = pinSize
+        }
+
+        graphicsOverlays = mapView.graphicsOverlays
+        val pinLocationGraphic = Graphic(wgs84Point, gempaLocationSymbol)
+        graphicList.add(pinLocationGraphic)
+        setGraphicsOverlay(mGraphicsOverlay)
+
+    }
+}
+
 fun removeLastPin() {
     if (graphicsOverlays.isNotEmpty()) graphicsOverlays.removeLast()
 

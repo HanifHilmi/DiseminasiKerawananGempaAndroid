@@ -14,8 +14,14 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.geocode.LocatorTask
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.hilmihanif.kerawanangempadantsunami.BuildConfig
 import com.hilmihanif.kerawanangempadantsunami.R
+import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.DataState
+import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
 import com.hilmihanif.kerawanangempadantsunami.mapTools.KerawananUrls
 import com.hilmihanif.kerawanangempadantsunami.mapTools.Location
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addFaultModelLayer
@@ -26,7 +32,9 @@ import com.hilmihanif.kerawanangempadantsunami.mapTools.identifyKerawananLayers
 import com.hilmihanif.kerawanangempadantsunami.mapTools.removeLastPin
 import com.hilmihanif.kerawanangempadantsunami.mapTools.reverseGeocoding
 import com.hilmihanif.kerawanangempadantsunami.mapTools.setBaseMap
+import com.hilmihanif.kerawanangempadantsunami.mapTools.setGempaPin
 import com.hilmihanif.kerawanangempadantsunami.mapTools.setPin
+import com.hilmihanif.kerawanangempadantsunami.utils.FIREBASE_TEST
 import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
 import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import kotlinx.coroutines.delay
@@ -43,13 +51,19 @@ class KerawananViewModel : ViewModel() {
     private val _inputCardUiState = MutableStateFlow(InputCardUiState())
     private val _mapUiState= MutableStateFlow(MapUiState(setBaseMap()))
     private val _resultCardUiState = MutableStateFlow(ResultCardUiState())
+    private val _firebaseResponse: MutableStateFlow<DataState> = MutableStateFlow(DataState.Empty)
+
 
     private val _mapView = MutableLiveData<MapView>()
     private val _mapScale = MutableStateFlow<Double>(0.0)
+    private val _latestResponse = MutableStateFlow(Gempa())
 
     val inputCardUiState= _inputCardUiState.asStateFlow()
     val mapUiState= _mapUiState.asStateFlow()
+
     val mapScale = _mapScale.asStateFlow()
+    val firebaseResponse = _firebaseResponse.asStateFlow()
+    val latestResponse = _latestResponse.asStateFlow()
 
     val resultCardUiState = _resultCardUiState.asStateFlow()
 
@@ -185,6 +199,24 @@ class KerawananViewModel : ViewModel() {
         }
     }
 
+    fun setOnGempaPin(gempa: Gempa){
+        if (_mapView.isInitialized){
+            viewModelScope.launch {
+                while (_mapView.value == null){
+                    delay(200)
+                }
+                _mapView.value?.let {mapView->
+                    setGempaPin(wgs84Point = gempa.getPoint(), mapView = mapView){
+                        if (mapView.graphicsOverlays.isNotEmpty()) mapView.graphicsOverlays.removeLast()
+                        mapView.graphicsOverlays.add(it)
+                    }
+                }
+
+            }
+
+        }
+    }
+
     fun setOnTapPinLocation(point: Point?, mapView: MapView,toggleList: List<String>) {
         /*
         Log.d(TEST_LOG,"viewtreeobserver = ${mapView.viewTreeObserver}")
@@ -288,6 +320,8 @@ class KerawananViewModel : ViewModel() {
         )
 
     }
+
+
 
     private fun setLocatorTask(){
         val locatorTask = LocatorTask("https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer").apply {
@@ -452,9 +486,48 @@ class KerawananViewModel : ViewModel() {
     init {
         setFaultLayer()
         setLocatorTask()
+        fetchDataFromFirebaseDB()
 
 
     }
+
+    private fun fetchDataFromFirebaseDB() {
+        val tempList = mutableListOf<Gempa>()
+        _firebaseResponse.value = DataState.Loading
+        FirebaseDatabase
+            .getInstance()
+            .getReference("Data/DataGempa")
+            .orderByChild("DateTime")
+            .limitToLast(10)
+            .addValueEventListener(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.d(FIREBASE_TEST,"firebase snapshot $snapshot")
+                    for(data in snapshot.children){
+                        val item = data.getValue(Gempa::class.java)
+                        if(item != null){
+                            tempList.add(item)
+                            Log.d(FIREBASE_TEST,"fireitem added to templist ${item}")
+
+                        }
+                    }
+                    if (tempList.isNotEmpty()){
+                        _firebaseResponse.value = DataState.Success(tempList)
+                        _latestResponse.update {
+                            tempList.last()
+                        }
+                    }
+                    Log.d(FIREBASE_TEST,"firebase snapshot size ${tempList.size}")
+                    Log.d(FIREBASE_TEST,"firebase snapshot size ${tempList.map { it.DateTime } }")
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    _firebaseResponse.value = DataState.Failure(error.message)
+                }
+            })
+    }
+
+
 }
 
 

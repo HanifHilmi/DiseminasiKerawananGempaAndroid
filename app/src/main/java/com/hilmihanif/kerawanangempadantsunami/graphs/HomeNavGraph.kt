@@ -30,16 +30,29 @@ fun HomeNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomBarScreen.Beranda.route) {
-//            ScreenContent(
-//                name = BottomBarScreen.Beranda.route,
-//                onClick = { }
-//            )
-            KerawananScreen(BERANDA_SCREEN)
+            KerawananScreen(BERANDA_SCREEN){
+
+            }
         }
         composable(route = BottomBarScreen.Kerawanan.route) {
-            KerawananScreen(KERAWANAN_SCREEN)
+            KerawananScreen(KERAWANAN_SCREEN){
+
+            }
+
         }
         detailsNavGraph(navController = navController)
+        gempaListNavGraph(navController = navController)
+    }
+}
+
+fun NavGraphBuilder.gempaListNavGraph(navController: NavHostController){
+    navigation(
+        route = Graph.BERANDA,
+        startDestination = ListGempaScreen.Dirasakan.route,
+    ){
+        composable(route = ListGempaScreen.Dirasakan.route){
+
+        }
     }
 }
 
@@ -68,3 +81,8 @@ sealed class DetailsScreen(val route: String) {
     object Information : DetailsScreen(route = "INFORMATION")
     object Overview : DetailsScreen(route = "OVERVIEW")
 }
+sealed class ListGempaScreen(val route: String) {
+    object Magnitude5 : ListGempaScreen(route = "INFORMATION")
+    object Dirasakan : ListGempaScreen(route = "OVERVIEW")
+}
+
