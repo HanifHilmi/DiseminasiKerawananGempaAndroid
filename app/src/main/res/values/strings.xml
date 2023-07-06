@@ -14,6 +14,13 @@
         <item>Zona Rawan Gempabumi Menengah</item>
         <item>Zona Rawan Gempabumi Tinggi</item>
     </string-array>
+
+    <string-array name="beranda_tabs">
+        <item>Gempabumi Terkini</item>
+        <item>Dirasakan</item>
+        <item>Magnitude \u2265 5.0</item>
+    </string-array>
+
     <string name="keterangan_patahan">Sesar/Patahan</string>
 
     <string name="input_koordinat">Masukkan titik koordinat (Khusus Provinsi Aceh, Sumatera Utara, Sumatera Barat, dan Riau</string>

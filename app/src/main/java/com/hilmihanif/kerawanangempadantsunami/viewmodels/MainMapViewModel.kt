@@ -65,6 +65,7 @@ class MainMapViewModel : ViewModel() {
     val firebaseResponse = _firebaseResponse.asStateFlow()
     val latestResponse = _latestResponse.asStateFlow()
 
+
     val resultCardUiState = _resultCardUiState.asStateFlow()
 
 
@@ -199,6 +200,15 @@ class MainMapViewModel : ViewModel() {
         }
     }
 
+    fun removeAllGempaPin(){
+        if(_mapView.isInitialized){
+
+            _mapView.value?.let{mapView ->
+                mapView.graphicsOverlays.clear()
+            }
+        }
+    }
+
     fun setOnGempaPin(gempa: Gempa){
         if (_mapView.isInitialized){
             viewModelScope.launch {
@@ -211,10 +221,12 @@ class MainMapViewModel : ViewModel() {
                         mapView.graphicsOverlays.add(it)
                     }
                 }
-                _mapUiState.update {
-                    it.copy(
-                        currentViewPoint = Viewpoint(gempa.getPoint()!!)
-                    )
+                if(gempa.getPoint() != null){
+                    _mapUiState.update {
+                        it.copy(
+                            currentViewPoint = Viewpoint(gempa.getPoint()!!)
+                        )
+                    }
                 }
 
             }
@@ -499,6 +511,19 @@ class MainMapViewModel : ViewModel() {
 
     }
 
+    private fun selectCurrentGempa(index:Int){
+
+        when(_firebaseResponse.value){
+            is DataState.Success -> {
+
+            }
+            is DataState.Empty -> TODO()
+            is DataState.Failure -> TODO()
+            is DataState.Loading -> TODO()
+
+        }
+    }
+
     private fun fetchDataFromFirebaseDB() {
         val tempList = mutableListOf<Gempa>()
         _firebaseResponse.value = DataState.Loading
@@ -515,7 +540,6 @@ class MainMapViewModel : ViewModel() {
                         if(item != null){
                             tempList.add(item)
                             Log.d(FIREBASE_TEST,"fireitem added to templist ${item}")
-
                         }
                     }
                     if (tempList.isNotEmpty()){

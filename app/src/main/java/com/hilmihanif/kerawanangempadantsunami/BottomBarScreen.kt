@@ -28,4 +28,5 @@ sealed class BottomBarScreen(
         title = "Kerawanan",
         icon = Icons.Default.Info
     )
+
 }

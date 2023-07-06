@@ -23,6 +23,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,16 +47,10 @@ import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.layers.Layer
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
-import com.hilmihanif.kerawanangempadantsunami.screens.beranda.BerandaCardContent
+import com.hilmihanif.kerawanangempadantsunami.screens.beranda.GempaTerkiniCard
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
-import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
-import com.hilmihanif.kerawanangempadantsunami.utils.FAULT_LAYER_INDEX
-import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
-import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
-import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
-import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
-import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
+import com.hilmihanif.kerawanangempadantsunami.utils.*
 
 
 
@@ -64,6 +59,7 @@ fun MapControllerScreen(
     modifier: Modifier = Modifier,
     currentScreen:String,
     viewModel: MainMapViewModel,
+    onShakemapClick:() -> Unit={},
     content:@Composable () -> Unit
 ) {
 
@@ -80,7 +76,8 @@ fun MapControllerScreen(
         },
         currentScreen = currentScreen,
         modifier = modifier,
-        content = content
+        content = content,
+        onShakemapClick = onShakemapClick
 
     )
 }
@@ -92,6 +89,7 @@ fun MapControllerContent(
     operationalLayers: MutableList<Layer>,
     zoomScale:Float,
     currentScreen: String,
+    onShakemapClick:()->Unit ={},
     onZoomSliderChanged:(Float)->Unit = {},
     content:@Composable ()->Unit
 ){
@@ -103,7 +101,6 @@ fun MapControllerContent(
         ) {
             var isLayersListExpanded by rememberSaveable { mutableStateOf(false) }
             var isZoomSliderExpanded by rememberSaveable { mutableStateOf(false) }
-            var isLegendDialogShowed by rememberSaveable { mutableStateOf(false) }
             var arrowAngle by rememberSaveable { mutableStateOf(0f) }
             val maxWidth = if (isLayersListExpanded) .35f else .3f
 
@@ -134,12 +131,10 @@ fun MapControllerContent(
                         modifier = Modifier
                             .rotate(arrowAngle),
                         imageVector = Icons.Default.ArrowDropDown,
-                        tint = MaterialTheme.colorScheme.primary,
+                        //tint = MaterialTheme.colorScheme.primary,
                         contentDescription = "Expand layers"
                     )
                 }
-
-
                 AnimatedVisibility(visible = isLayersListExpanded) {
                     Column {
                         val mutablelist = operationalLayers.map { it.isVisible }.toMutableStateList()
@@ -217,6 +212,7 @@ fun MapControllerContent(
             }
             when (currentScreen) {
                 KERAWANAN_SCREEN -> {
+                    var isLegendDialogShowed by rememberSaveable { mutableStateOf(false) }
                     Column(
                         modifier = Modifier
                             .padding(16.dp)
@@ -246,9 +242,21 @@ fun MapControllerContent(
                     }
                 }
 
-                BERANDA_SCREEN -> {
-
+                BERANDA_TAB_0 -> {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.BottomEnd)
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(8.dp)
+                            .clickable {onShakemapClick()}
+                            .animateContentSize(),
+                    ) {
+                        Text(text = "Shakemap", style = MaterialTheme.typography.labelSmall)
+                    }
                 }
+                BERANDA_TAB_1 ->{}
+
             }
         }
         content()
@@ -298,15 +306,17 @@ fun VerticalSlider(
 @Composable
 fun PrevMapControl() {
     KerawananGempaDanTsunamiTheme {
-        MapControllerContent(
-            operationalLayers = mutableListOf(),
-            zoomScale = 7f,
-            currentScreen = KERAWANAN_SCREEN
-        ){
-            BerandaCardContent(
-                gempaData = Gempa(),
-                modifier = Modifier.fillMaxWidth()
-            )
+        Surface {
+            MapControllerContent(
+                operationalLayers = mutableListOf(),
+                zoomScale = 7f,
+                currentScreen = BERANDA_TAB_0
+            ){
+                GempaTerkiniCard(
+                    gempaData = Gempa(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 

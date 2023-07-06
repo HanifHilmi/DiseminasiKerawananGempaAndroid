@@ -22,7 +22,7 @@ import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.hilmihanif.kerawanangempadantsunami.R
-import com.hilmihanif.kerawanangempadantsunami.screens.beranda.BerandaCardScreen
+import com.hilmihanif.kerawanangempadantsunami.screens.beranda.BerandaScreen
 import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananScreen
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
@@ -33,7 +33,6 @@ import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 fun MainMapScreen(
     targetScreen :String,
     mainMapViewModel: MainMapViewModel = viewModel(),
-    onClick:()-> Unit
 ) {
     val toggleList = stringArrayResource(id = R.array.toggle_list).toList()
 
@@ -79,7 +78,8 @@ fun MainMapScreen(
         },
         isInputProcessNotDone = mapUiState.isInputProcessNotDone,
         currentScreen = targetScreen,
-        viewModel = mainMapViewModel
+        viewModel = mainMapViewModel,
+
     )
 }
 
@@ -121,22 +121,6 @@ fun MainMapContent(
 
     }
 
-
-
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.SpaceBetween
-//    ) {
-//        AnimatedVisibility(
-//            visible = mapStatus.value == LoadStatus.Loaded,
-//            modifier = Modifier.weight(1f)
-//        ){
-//            MapControllerScreen(
-//                viewModel = viewModel,
-//                currentScreen = currentScreen
-//            )
-//        }
-//    }
     AnimatedVisibility(
         visible = (mapStatus.value == LoadStatus.Loaded),
         modifier = Modifier
@@ -150,35 +134,12 @@ fun MainMapContent(
                     locatorTask = locatorTask,
                     onProcessButtonClick = onProcessButtonClick
                 )
-                /*
-                MapControllerScreen(currentScreen = currentScreen, viewModel = viewModel) {
-                    Crossfade(targetState = isInputProcessNotDone) {
-                        when(it){
-                            true ->{
-                                InputKoordinatCard(
-                                    modifier = Modifier
-
-                                        .animateContentSize(),
-                                    viewModel = viewModel,
-                                    onToggleChange = { onInputToggleChange(it) },
-                                    locatorTask = locatorTask,
-                                    onProsesButtonClick = onProcessButtonClick,
-                                )
-                            }
-                            false ->{
-                                ResultCard(
-                                    modifier = Modifier.animateContentSize(),
-                                    viewModel = viewModel,
-                                )
-                            }
-                        }
-                    }
-                }
-                 */
-
             }
             BERANDA_SCREEN->{
-                BerandaCardScreen(viewModel = viewModel)
+                BerandaScreen(
+                    viewModel = viewModel,
+                )
+
 
             }
         }

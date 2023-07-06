@@ -87,41 +87,6 @@ fun MapLegendDialog(
     }
 
 )
-/*
-@Composable
-fun LegendDialog(
-
-) {
-    var showDlg by remember { mutableStateOf(true)}
-    Dialog(
-        onDismissRequest = { showDlg = false },
-        content = {
-            Column(Modifier.background(Color.White)) {
-                Text(
-                    text = "Pick something from the list",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-
-                Row(
-
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    TextButton(onClick = { showDlg = false }) {
-                        Text("Cancel")
-                    }
-                    TextButton(onClick = { showDlg = false }) {
-                        Text("Done")
-                    }
-                }
-            }
-        },
-    )
-}
-
- */
 
 
 @Composable
@@ -136,14 +101,14 @@ fun BackHandlerConfirmationDialog(activity:Activity?){
                 TextButton(onClick = {
                     activity!!.finish()
                 }) {
-                    Text(text = "Keluar")
+                    Text(text = "Keluar",color= Color.Red)
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
                     isDialogShowed = false
                 }) {
-                    Text(text = "Batalkan",color= Color.Red)
+                    Text(text = "Batalkan")
                 }
             },
 

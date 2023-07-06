@@ -32,5 +32,7 @@ data class Gempa(
 
     fun getPoint():Point? = GeometryEngine.projectOrNull(getWgs84Point()!!,SpatialReference.webMercator())!!
 
+    fun getShakemapUrl():String = "https://data.bmkg.go.id/DataMKG/TEWS/$Shakemap"
+
 
 }

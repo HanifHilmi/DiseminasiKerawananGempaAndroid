@@ -24,6 +24,7 @@ import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 fun HomeNavGraph(navController: NavHostController) {
     val currentActivity  = LocalContext.current as Activity?
     var isFirstTime by rememberSaveable {mutableStateOf(true)}
+
     NavHost(
         navController = navController,
         route = Graph.HOME,
@@ -48,35 +49,20 @@ fun HomeNavGraph(navController: NavHostController) {
             BackHandlerConfirmationDialog(currentActivity)
             MainMapScreen(
                 targetScreen = BERANDA_SCREEN,
-                onClick = {
-                    navController.navigate(Graph.BERANDA)
-                }
             )
         }
         composable(route = BottomBarScreen.Kerawanan.route) {
-            BackHandlerConfirmationDialog(currentActivity)
+           //BackHandlerConfirmationDialog(currentActivity)
             MainMapScreen(
                 targetScreen = KERAWANAN_SCREEN,
-                onClick = {}
             )
         }
+
         detailsNavGraph(navController = navController)
-        gempaListNavGraph(navController = navController)
     }
 }
 
 
-
-fun NavGraphBuilder.gempaListNavGraph(navController: NavHostController){
-    navigation(
-        route = Graph.BERANDA,
-        startDestination = ListGempaScreen.Dirasakan.route,
-    ){
-        composable(route = ListGempaScreen.Dirasakan.route){
-
-        }
-    }
-}
 
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(
@@ -85,7 +71,7 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     ) {
         composable(route = DetailsScreen.Information.route) {
             ScreenContent(name = DetailsScreen.Information.route) {
-                navController.navigate(DetailsScreen.Overview.route)
+//                navController.navigate(DetailsScreen.Overview.route)
             }
         }
         composable(route = DetailsScreen.Overview.route) {
@@ -103,8 +89,5 @@ sealed class DetailsScreen(val route: String) {
     object Information : DetailsScreen(route = "INFORMATION")
     object Overview : DetailsScreen(route = "OVERVIEW")
 }
-sealed class ListGempaScreen(val route: String) {
-    object Magnitude5 : ListGempaScreen(route = "INFORMATION")
-    object Dirasakan : ListGempaScreen(route = "OVERVIEW")
-}
+
 

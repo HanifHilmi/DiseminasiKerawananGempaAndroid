@@ -27,9 +27,7 @@ import com.hilmihanif.kerawanangempadantsunami.graphs.HomeNavGraph
 @Composable
 fun HomeScreen(navController: NavHostController = rememberNavController()) {
     Scaffold(
-        topBar = {
-
-        },
+        topBar = {},
         bottomBar = {
             BottomBar(navController = navController)
         }
