@@ -42,13 +42,15 @@ import androidx.compose.ui.unit.dp
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.hilmihanif.kerawanangempadantsunami.R
+import com.hilmihanif.kerawanangempadantsunami.viewmodels.InputCardUiState
+import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 
 private lateinit var toggleList: List<String>
 
 @Composable
 fun InputKoordinatCard(
     modifier: Modifier = Modifier,
-    viewModel: KerawananViewModel,
+    viewModel: MainMapViewModel,
     locatorTask: LocatorTask,
     onProsesButtonClick:() -> Unit ={},
     onToggleChange :(String) -> Unit ={}
@@ -58,6 +60,9 @@ fun InputKoordinatCard(
     val locatorStatus by locatorTask.loadStatus.collectAsState()
 
     viewModel.setInputDesc(context)
+
+
+
     InputKoordinatCardContent(
         modifier = modifier,
         locatorStatus =locatorStatus,
@@ -78,7 +83,7 @@ fun InputKoordinatCard(
 fun InputKoordinatCardContent(
     modifier: Modifier = Modifier,
     locatorStatus:LoadStatus,
-    inputCardUiState:InputCardUiState,
+    inputCardUiState: InputCardUiState,
     onProsesButtonClick:() -> Unit ={},
     onToggleChange :(String) -> Unit ={},
     onLatFieldValueChanged: (TextFieldValue) -> Unit ={},

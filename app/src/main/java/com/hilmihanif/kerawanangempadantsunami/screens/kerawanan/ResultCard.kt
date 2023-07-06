@@ -30,11 +30,12 @@ import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunami
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
+import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 
 @Composable
 fun ResultCard(
     modifier: Modifier = Modifier,
-    viewModel: KerawananViewModel
+    viewModel: MainMapViewModel
 ){
     val resultCardUiState by viewModel.resultCardUiState.collectAsState()
 

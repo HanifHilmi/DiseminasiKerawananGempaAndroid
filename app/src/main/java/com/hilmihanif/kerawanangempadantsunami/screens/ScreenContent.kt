@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananScreen
+import com.hilmihanif.kerawanangempadantsunami.screens.main_map.MainMapScreen
 import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 
 
@@ -35,6 +35,6 @@ fun ScreenContent(name: String, onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreenContent(){
-    KerawananScreen(KERAWANAN_SCREEN){}
+    MainMapScreen(KERAWANAN_SCREEN){}
 }
 

@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
+package com.hilmihanif.kerawanangempadantsunami.viewmodels
 
 import androidx.compose.ui.text.input.TextFieldValue
 import com.arcgismaps.LoadStatus

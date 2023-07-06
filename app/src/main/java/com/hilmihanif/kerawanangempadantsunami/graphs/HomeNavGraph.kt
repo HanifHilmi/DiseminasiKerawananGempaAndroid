@@ -1,26 +1,41 @@
 package com.hilmihanif.kerawanangempadantsunami.graphs
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.hilmihanif.kerawanangempadantsunami.BottomBarScreen
-import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananScreen
+import com.hilmihanif.kerawanangempadantsunami.screens.main_map.MainMapScreen
 import com.hilmihanif.kerawanangempadantsunami.screens.ScreenContent
+import com.hilmihanif.kerawanangempadantsunami.screens.main_map.BackHandlerConfirmationDialog
 import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 
 
 @Composable
 fun HomeNavGraph(navController: NavHostController) {
+    val currentActivity  = LocalContext.current as Activity?
+    var isFirstTime by rememberSaveable {mutableStateOf(true)}
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = BottomBarScreen.Profil.route
+        startDestination = BottomBarScreen.Profil.route,
+
     ) {
         composable(route = BottomBarScreen.Profil.route) {
+            BackHandlerConfirmationDialog(currentActivity)
+            if(isFirstTime){
+                navController.navigate(BottomBarScreen.Beranda.route)
+                isFirstTime = false
+            }
             ScreenContent(
                 name = BottomBarScreen.Profil.route,
                 onClick = {
@@ -30,20 +45,27 @@ fun HomeNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomBarScreen.Beranda.route) {
-            KerawananScreen(BERANDA_SCREEN){
-
-            }
+            BackHandlerConfirmationDialog(currentActivity)
+            MainMapScreen(
+                targetScreen = BERANDA_SCREEN,
+                onClick = {
+                    navController.navigate(Graph.BERANDA)
+                }
+            )
         }
         composable(route = BottomBarScreen.Kerawanan.route) {
-            KerawananScreen(KERAWANAN_SCREEN){
-
-            }
-
+            BackHandlerConfirmationDialog(currentActivity)
+            MainMapScreen(
+                targetScreen = KERAWANAN_SCREEN,
+                onClick = {}
+            )
         }
         detailsNavGraph(navController = navController)
         gempaListNavGraph(navController = navController)
     }
 }
+
+
 
 fun NavGraphBuilder.gempaListNavGraph(navController: NavHostController){
     navigation(

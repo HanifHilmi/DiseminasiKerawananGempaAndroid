@@ -1,5 +1,6 @@
 package com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data
 
+import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 
@@ -18,7 +19,7 @@ data class Gempa(
     val Shakemap:String ="",
     val Terkirim:String? = null
 ){
-    fun getPoint() : Point? {
+    fun getWgs84Point() : Point? {
         val inputString = Coordinates
         val values = inputString.split(",")
         if (values.size == 2) {
@@ -28,5 +29,8 @@ data class Gempa(
         }
         return null
     }
+
+    fun getPoint():Point? = GeometryEngine.projectOrNull(getWgs84Point()!!,SpatialReference.webMercator())!!
+
 
 }

@@ -1,22 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 
-    <color name="radio_selected">#717171</color>
-    <color name="radio_regular">#b6b6b6</color>
-    <color name="button_confirm">#7181d4</color>
-    <color name="button_info">#d4d071</color>
-
-    <color name="krb_sangatrendah">#d0def2</color>
-    <color name="krb_rendah">#aad590</color>
-    <color name="krb_sedang">#f9f290</color>
-    <color name="krb_tinggi">#ffa4bf</color>
-    <color name="orange">#FF9800</color>
-    <color name="krb_rombakan">#820200</color>
 </resources>

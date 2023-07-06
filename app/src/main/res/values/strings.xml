@@ -16,19 +16,14 @@
     </string-array>
     <string name="keterangan_patahan">Sesar/Patahan</string>
 
-    <string name="lorem10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, natus!</string>
-    <string name="lorem20">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis consequuntur dicta eveniet in ipsum molestias nemo quia similique? Illum, rerum!</string>
-
     <string name="input_koordinat">Masukkan titik koordinat (Khusus Provinsi Aceh, Sumatera Utara, Sumatera Barat, dan Riau</string>
     <string name="input_map">Tap peta untuk menentukan koordinat (Khusus Provinsi Aceh, Sumatera Utara, Sumatera Barat, dan Riau</string>
     <string name="input_location">Lokasi anda saat ini berada di %s</string>
 
-    <string name="more_info">Info Selengkapnya</string>
-    <string name="new_input">Input Baru</string>
-    <string name="coordinatePointText">Koordinat point :</string>
-
     <string name="result_gempatitle">Tingkat kerawanan Gempa</string>
     <string name="result_gmtitle">Tingkat kerentanan Gerakan Tanah</string>
     <string name="result_tsutitle">Tingkat kerawanan Tsunami</string>
+    <string name="tutup_aplikasi">Tutup Aplikasi?</string>
+    <string name="tutup_aplikasi_desc">Tekan Konfirmasi untuk menutup aplikasi.\nTekan Batalkan untuk membatalkan.</string>
 
 </resources>

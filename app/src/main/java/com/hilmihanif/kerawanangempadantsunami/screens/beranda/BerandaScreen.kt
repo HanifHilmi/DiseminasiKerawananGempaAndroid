@@ -29,11 +29,13 @@ import androidx.compose.ui.unit.dp
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.DataState
 import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
-import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananViewModel
+import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
+import com.hilmihanif.kerawanangempadantsunami.screens.main_map.MapControllerScreen
+import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
 
 
 @Composable
-fun BerandaCardScreen(viewModel: KerawananViewModel) {
+fun BerandaCardScreen(viewModel: MainMapViewModel) {
 
 
 
@@ -42,7 +44,10 @@ fun BerandaCardScreen(viewModel: KerawananViewModel) {
     val latestresult = viewModel.latestResponse.collectAsState()
     //GempaHistoryContent(result = result.value)
     viewModel.setOnGempaPin(latestresult.value)
-    BerandaCardContent(gempaData = latestresult.value, modifier = Modifier.fillMaxWidth())
+
+    MapControllerScreen(currentScreen = BERANDA_SCREEN, viewModel = viewModel) {
+        BerandaCardContent(gempaData = latestresult.value, modifier = Modifier.fillMaxWidth())
+    }
 
 
 }

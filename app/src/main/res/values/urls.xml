@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="url_gbsumut">https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/krb_gempa_sumatera_utara/FeatureServer/0</string>
-    <string name="url_gbaceh">https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/krb_gempa_aceh/FeatureServer/0</string>
-    <string name="url_gbsumbar">https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/krb_gempa_sumatera_barat/FeatureServer/0</string>
-    <string name="url_gbriau">https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/krb_gempa_riau/FeatureServer/0</string>
 
-    <string name="url_zkgtSumut">https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/zkgt_sumatera_utara/FeatureServer/0</string>
-    <string name="url_zkgtaceh">https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/zkgt_aceh/FeatureServer/0</string>
-    <string name="url_zkgtSumbar">https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/zkgt_sumatera_barat/FeatureServer/0</string>
-<!--    <string name="url_zkgtriau"></string>-->
-
-    <string name="url_locator">https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer</string>
+    <!--    <string name="url_zkgtriau"></string>-->
 
 </resources>

@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
+package com.hilmihanif.kerawanangempadantsunami.screens.main_map
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -30,7 +30,9 @@ fun MapViewWithCompose(
         factory ={context ->
             MapView(context).also { mapView ->
                 lifecycleOwner.lifecycle.addObserver(mapView)
+                //Log.d(TEST_MAP_BUG,"mapview.map ${mapView.map}")
                 mapView.map = arcGISMap
+                //Log.d(TEST_MAP_BUG,"mapview.map ${mapView.map}")
                 setInitMapView(mapView)
                 lifecycleOwner.lifecycleScope.launch {
                     mapView.onSingleTapConfirmed.collect{

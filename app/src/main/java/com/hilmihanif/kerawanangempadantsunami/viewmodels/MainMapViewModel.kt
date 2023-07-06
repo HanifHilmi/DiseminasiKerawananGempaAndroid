@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
+package com.hilmihanif.kerawanangempadantsunami.viewmodels
 
 
 import android.content.Context
@@ -44,7 +44,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.pow
 
-class KerawananViewModel : ViewModel() {
+class MainMapViewModel : ViewModel() {
     private lateinit var toggleList: List<String>
 
 
@@ -206,10 +206,15 @@ class KerawananViewModel : ViewModel() {
                     delay(200)
                 }
                 _mapView.value?.let {mapView->
-                    setGempaPin(wgs84Point = gempa.getPoint(), mapView = mapView){
+                    setGempaPin(wgs84Point = gempa.getWgs84Point(), mapView = mapView){
                         if (mapView.graphicsOverlays.isNotEmpty()) mapView.graphicsOverlays.removeLast()
                         mapView.graphicsOverlays.add(it)
                     }
+                }
+                _mapUiState.update {
+                    it.copy(
+                        currentViewPoint = Viewpoint(gempa.getPoint()!!)
+                    )
                 }
 
             }
@@ -436,6 +441,9 @@ class KerawananViewModel : ViewModel() {
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+    }
 
     fun resetInput(){
         _inputCardUiState.update {
