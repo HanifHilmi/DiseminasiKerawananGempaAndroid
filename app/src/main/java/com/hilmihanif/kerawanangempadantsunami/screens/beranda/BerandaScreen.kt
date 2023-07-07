@@ -23,17 +23,18 @@ import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 @Composable
 fun BerandaScreen(viewModel: MainMapViewModel) {
 
-    //val result = viewModel.firebaseResponse.collectAsState()
+    val result = viewModel.firebaseResponse.collectAsState()
     val latestresult = viewModel.latestResponse.collectAsState()
     //GempaHistoryContent(result = result.value)
-
 
     
 
     val tabs = stringArrayResource(id = R.array.beranda_tabs).toList()
 
     var tabIndex by remember { mutableStateOf(0)}
-    var shakemapDialog by remember { mutableStateOf(false)}
+    var showShakemapDialog by remember { mutableStateOf(false)}
+    var controllerVisibility by remember { mutableStateOf(true)}
+
 
     
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -49,32 +50,39 @@ fun BerandaScreen(viewModel: MainMapViewModel) {
         MapControllerScreen(
             currentScreen = "BerandaTab$tabIndex",
             viewModel = viewModel,
+            visibility = controllerVisibility,
             modifier = Modifier.padding(),
             onShakemapClick = {
-                shakemapDialog = true
+                showShakemapDialog = true
             }
         ) {
             viewModel.removeAllGempaPin()
             when (tabIndex) {
                 0 -> {
-                    GempaTerkiniCard(
+                    controllerVisibility = true
+                    GempaSelectedCard(
+                        title = "Gempa Terkini",
                         gempaData = latestresult.value,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        setGempaPin = {
+                            viewModel.setOnGempaPin(it)
+                        }
                     )
-                    if (shakemapDialog){
+                    if (showShakemapDialog){
                         ShakeMapDialog(url = latestresult.value.getShakemapUrl()) {
-                            shakemapDialog = false
+                            showShakemapDialog = false
                         }
                     }
-                    viewModel.setOnGempaPin(latestresult.value)
                 }
 
                 1 -> {
+                    //controllerVisibility = false
+                    GempaDirasakanList(result = result.value, viewModel = viewModel,mapControllerVisibile = {controllerVisibility = it})
 
                 }
 
                 2 -> {
-
+                    controllerVisibility = true
                 }
             }
         }
@@ -82,7 +90,6 @@ fun BerandaScreen(viewModel: MainMapViewModel) {
 
 
 }
-
 
 
 

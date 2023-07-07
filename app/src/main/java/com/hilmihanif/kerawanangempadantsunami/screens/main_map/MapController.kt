@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.layers.Layer
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
-import com.hilmihanif.kerawanangempadantsunami.screens.beranda.GempaTerkiniCard
+import com.hilmihanif.kerawanangempadantsunami.screens.beranda.GempaSelectedCard
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
 import com.hilmihanif.kerawanangempadantsunami.utils.*
@@ -58,6 +59,7 @@ import com.hilmihanif.kerawanangempadantsunami.utils.*
 fun MapControllerScreen(
     modifier: Modifier = Modifier,
     currentScreen:String,
+    visibility:Boolean = true,
     viewModel: MainMapViewModel,
     onShakemapClick:() -> Unit={},
     content:@Composable () -> Unit
@@ -67,6 +69,7 @@ fun MapControllerScreen(
     val mapScale by viewModel.mapScale.collectAsState()
 
     viewModel.updateMapScale()
+
     MapControllerContent(
         //operationalLayers = baseMap.operationalLayers,
         operationalLayers = state.map.operationalLayers,
@@ -74,12 +77,14 @@ fun MapControllerScreen(
         onZoomSliderChanged = {
             viewModel.setMapScale(it)
         },
+        visibility = visibility,
         currentScreen = currentScreen,
         modifier = modifier,
         content = content,
         onShakemapClick = onShakemapClick
 
     )
+
 }
 
 
@@ -88,6 +93,7 @@ fun MapControllerContent(
     modifier: Modifier = Modifier,
     operationalLayers: MutableList<Layer>,
     zoomScale:Float,
+    visibility:Boolean = true,
     currentScreen: String,
     onShakemapClick:()->Unit ={},
     onZoomSliderChanged:(Float)->Unit = {},
@@ -97,7 +103,7 @@ fun MapControllerContent(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .weight(1f),
+                .weight(if (visibility) 1f else .1f),
         ) {
             var isLayersListExpanded by rememberSaveable { mutableStateOf(false) }
             var isZoomSliderExpanded by rememberSaveable { mutableStateOf(false) }
@@ -105,161 +111,175 @@ fun MapControllerContent(
             val maxWidth = if (isLayersListExpanded) .35f else .3f
 
 
-            Column(
-                modifier = modifier
-                    .padding(16.dp)
-                    .align(Alignment.TopEnd)
-                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(4.dp))
-                    .padding(8.dp)
-                    .fillMaxWidth(maxWidth)
-                    .clickable {
-                        isLayersListExpanded = !isLayersListExpanded
-                        arrowAngle = (arrowAngle + 180) % 360f
-                    }
-                    .animateContentSize(),
-            ) {
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+            if(visibility){
+                Column(
+                    modifier = modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopEnd)
+                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(4.dp))
+                        .padding(8.dp)
+                        .fillMaxWidth(maxWidth)
+                        .clickable {
+                            isLayersListExpanded = !isLayersListExpanded
+                            arrowAngle = (arrowAngle + 180) % 360f
+                        }
+                        .animateContentSize(),
                 ) {
-                    Text(
-                        text = "Layers",
-                        style = MaterialTheme.typography.labelMedium,
-                        //modifier = Modifier.width(100.dp)
-                    )
-                    Icon(
-                        modifier = Modifier
-                            .rotate(arrowAngle),
-                        imageVector = Icons.Default.ArrowDropDown,
-                        //tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = "Expand layers"
-                    )
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Layers",
+                            style = MaterialTheme.typography.labelMedium,
+                            //modifier = Modifier.width(100.dp)
+                        )
+                        Icon(
+                            modifier = Modifier
+                                .rotate(arrowAngle),
+                            imageVector = Icons.Default.ArrowDropDown,
+                            //tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = "Expand layers"
+                        )
+                    }
+                    AnimatedVisibility(visible = isLayersListExpanded) {
+                        Column {
+                            val mutablelist = operationalLayers.map { it.isVisible }.toMutableStateList()
+                            var listCount by remember { mutableStateOf(0) }
+
+                            operationalLayers.forEachIndexed { index, layer ->
+                                listCount++
+                                val text = when (index) {
+                                    FAULT_LAYER_INDEX -> "Fault Model Layer"
+                                    GEMPA_LAYER_INDEX -> "Gempa Layer"
+                                    GM_LAYER_INDEX -> "Gerakan Tanah Layer"
+                                    TSUNAMI_LAYER_INDEX -> "Tsunami Layer"
+                                    else -> ""
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = text,
+                                        modifier = Modifier.weight(0.5f),
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+
+                                    Checkbox(
+                                        checked = mutablelist[index],
+                                        onCheckedChange = {
+                                            layer.isVisible = !layer.isVisible
+                                            mutablelist.add(index, layer.isVisible)
+                                        })// TODO( modify layer visibility when checked)
+                                }
+                                Divider()
+                            }
+
+                        }
+                    }
                 }
-                AnimatedVisibility(visible = isLayersListExpanded) {
-                    Column {
-                        val mutablelist = operationalLayers.map { it.isVisible }.toMutableStateList()
-                        var listCount by remember { mutableStateOf(0) }
 
-                        operationalLayers.forEachIndexed { index, layer ->
-                            listCount++
-                            val text = when (index) {
-                                FAULT_LAYER_INDEX -> "Fault Model Layer"
-                                GEMPA_LAYER_INDEX -> "Gempa Layer"
-                                GM_LAYER_INDEX -> "Gerakan Tanah Layer"
-                                TSUNAMI_LAYER_INDEX -> "Tsunami Layer"
-                                else -> ""
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = text,
-                                    modifier = Modifier.weight(0.5f),
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-
-                                Checkbox(
-                                    checked = mutablelist[index],
-                                    onCheckedChange = {
-                                        layer.isVisible = !layer.isVisible
-                                        mutablelist.add(index, layer.isVisible)
-                                    })// TODO( modify layer visibility when checked)
-                            }
-                            Divider()
+                Column(
+                    modifier = modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopStart)
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                            RoundedCornerShape(CornerSize(50))
+                        )
+                        .padding(8.dp)
+                        .clickable {}
+                        .animateContentSize(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    AnimatedVisibility(visible = isZoomSliderExpanded) {
+                        Column {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.zoom_out_24px),
+                                contentDescription = "",
+                                modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded },
+                                tint = MaterialTheme.colorScheme.surfaceTint
+                            )
+                            VerticalSlider(
+                                sliderValue = zoomScale,
+                                onZoomSliderChanged = onZoomSliderChanged
+                            )
                         }
 
                     }
-                }
-            }
-
-            Column(
-                modifier = modifier
-                    .padding(16.dp)
-                    .align(Alignment.TopStart)
-                    .background(
-                        MaterialTheme.colorScheme.background,
-                        RoundedCornerShape(CornerSize(50))
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.zoom_in_24px),
+                        contentDescription = "",
+                        modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded },
+                        //tint = MaterialTheme.colorScheme.surfaceTint
                     )
-                    .padding(8.dp)
-                    .clickable {}
-                    .animateContentSize(),
-                verticalArrangement = Arrangement.Center
-            ) {
-                AnimatedVisibility(visible = isZoomSliderExpanded) {
-                    Column {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.zoom_out_24px),
-                            contentDescription = "",
-                            modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded },
-                            tint = MaterialTheme.colorScheme.surfaceTint
-                        )
-                        VerticalSlider(
-                            sliderValue = zoomScale,
-                            onZoomSliderChanged = onZoomSliderChanged
-                        )
-                    }
+
 
                 }
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.zoom_in_24px),
-                    contentDescription = "",
-                    modifier = Modifier.clickable { isZoomSliderExpanded = !isZoomSliderExpanded },
-                    //tint = MaterialTheme.colorScheme.surfaceTint
-                )
-
-
-            }
-            when (currentScreen) {
-                KERAWANAN_SCREEN -> {
-                    var isLegendDialogShowed by rememberSaveable { mutableStateOf(false) }
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.BottomEnd)
-                            .background(
-                                MaterialTheme.colorScheme.background,
-                                RoundedCornerShape(CornerSize(50))
-                            )
-                            .padding(8.dp)
-                            .clickable {}
-                            .animateContentSize(),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = "",
-                            modifier = Modifier.clickable {
-                                isLegendDialogShowed = true
-                            }
-                        )
-                        if (isLegendDialogShowed) {
-                            MapLegendDialog(
-                                onClose = {
-                                    isLegendDialogShowed = false
+                when (currentScreen) {
+                    KERAWANAN_SCREEN -> {
+                        var isLegendDialogShowed by rememberSaveable { mutableStateOf(false) }
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .align(Alignment.BottomEnd)
+                                .background(
+                                    MaterialTheme.colorScheme.background,
+                                    RoundedCornerShape(CornerSize(50))
+                                )
+                                .padding(8.dp)
+                                .clickable {}
+                                .animateContentSize(),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = "",
+                                modifier = Modifier.clickable {
+                                    isLegendDialogShowed = true
                                 }
                             )
+                            if (isLegendDialogShowed) {
+                                MapLegendDialog(
+                                    onClose = {
+                                        isLegendDialogShowed = false
+                                    }
+                                )
+                            }
                         }
                     }
-                }
 
-                BERANDA_TAB_0 -> {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.BottomEnd)
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(8.dp)
-                            .clickable {onShakemapClick()}
-                            .animateContentSize(),
-                    ) {
-                        Text(text = "Shakemap", style = MaterialTheme.typography.labelSmall)
+                    BERANDA_TAB_0 -> {
+                        ShakeMapButton{
+                            onShakemapClick()
+                        }
                     }
-                }
-                BERANDA_TAB_1 ->{}
+                    BERANDA_TAB_1 ->{
+                        ShakeMapButton{
+                            onShakemapClick()
+                        }
+                    }
 
+                }
             }
         }
+
         content()
+    }
+}
+
+@Composable
+fun BoxScope.ShakeMapButton(onShakemapClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .align(Alignment.BottomEnd)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(8.dp)
+            .clickable { onShakemapClick() }
+            .animateContentSize(),
+    ) {
+        Text(text = "Shakemap", style = MaterialTheme.typography.labelSmall)
     }
 }
 
@@ -312,7 +332,8 @@ fun PrevMapControl() {
                 zoomScale = 7f,
                 currentScreen = BERANDA_TAB_0
             ){
-                GempaTerkiniCard(
+                GempaSelectedCard(
+                    title="Gempa Terkini",
                     gempaData = Gempa(),
                     modifier = Modifier.fillMaxWidth()
                 )

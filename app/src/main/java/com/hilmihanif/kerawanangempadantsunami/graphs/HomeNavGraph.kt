@@ -1,6 +1,7 @@
 package com.hilmihanif.kerawanangempadantsunami.graphs
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +19,7 @@ import com.hilmihanif.kerawanangempadantsunami.screens.ScreenContent
 import com.hilmihanif.kerawanangempadantsunami.screens.main_map.BackHandlerConfirmationDialog
 import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
+import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 
 
 @Composable
@@ -41,6 +43,7 @@ fun HomeNavGraph(navController: NavHostController) {
                 name = BottomBarScreen.Profil.route,
                 onClick = {
                     navController.navigate(Graph.DETAILS)
+                    Log.d(TEST_LOG,"current destination ${navController.currentDestination?.route ?: "Null"}")
                 }
             )
         }

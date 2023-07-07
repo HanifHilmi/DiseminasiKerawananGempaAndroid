@@ -1,6 +1,7 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.beranda
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
@@ -31,10 +33,15 @@ import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
 
 
 @Composable
-fun GempaTerkiniCard(
+fun GempaSelectedCard(
+    title :String,
     modifier: Modifier = Modifier,
-    gempaData: Gempa
+    gempaData: Gempa,
+    isBackIcon:Boolean = false,
+    onBackIconClick:()-> Unit ={},
+    setGempaPin:(Gempa)->Unit={},
 ) {
+    setGempaPin(gempaData)
     Card(
         modifier = modifier
             .padding(8.dp)
@@ -42,12 +49,17 @@ fun GempaTerkiniCard(
             .padding(8.dp)
             .width(IntrinsicSize.Max),
     ) {
-        Column(verticalArrangement = Arrangement.Center) {
+        Column() {
             Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)) {
-                Icon(imageVector = Icons.Default.Warning, contentDescription ="" )
-                Text(text = " Gempabumi Terkini", style = MaterialTheme.typography.titleMedium)
+                .padding(12.dp)
+                .width(IntrinsicSize.Min),
+            ) {
+                if (!isBackIcon){
+                    Icon(imageVector = Icons.Default.Warning, contentDescription ="" )
+                    Text(text = title, style = MaterialTheme.typography.titleMedium)
+                }else{
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "",modifier.clickable { onBackIconClick() })
+                }
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -117,7 +129,10 @@ fun GempaHistoryContent(
 @Preview
 @Composable
 fun GempaTerkiniPrev() {
-    GempaTerkiniCard(
+    GempaSelectedCard(
+        modifier = Modifier.fillMaxWidth(),
+        isBackIcon = true,
+        title = "Gempa Terkini",
         gempaData = Gempa(
             Jam = "20:57:01 WIB",
             Magnitude = "3.7",

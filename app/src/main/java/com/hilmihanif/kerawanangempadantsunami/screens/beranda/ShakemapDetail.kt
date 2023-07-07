@@ -55,5 +55,8 @@ fun ShakeMapDialog(url:String,onClose:()->Unit) {
 @Preview
 @Composable
 fun PrevShakemapComp() {
+    ShakeMapDialog(url ="") {
+
+    }
 
 }
