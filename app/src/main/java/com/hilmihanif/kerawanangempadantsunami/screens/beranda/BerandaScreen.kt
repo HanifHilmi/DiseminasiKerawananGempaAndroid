@@ -56,6 +56,12 @@ fun BerandaScreen(viewModel: MainMapViewModel) {
                 showShakemapDialog = true
             }
         ) {
+            var currentShakemapUrl by remember { mutableStateOf("")}
+            if (showShakemapDialog && currentShakemapUrl.isNotEmpty()){
+                ShakeMapDialog(url = currentShakemapUrl) {
+                    showShakemapDialog = false
+                }
+            }
             viewModel.removeAllGempaPin()
             when (tabIndex) {
                 0 -> {
@@ -66,18 +72,19 @@ fun BerandaScreen(viewModel: MainMapViewModel) {
                         modifier = Modifier.fillMaxWidth(),
                         setGempaPin = {
                             viewModel.setOnGempaPin(it)
+                            currentShakemapUrl = it.getShakemapUrl()
                         }
                     )
-                    if (showShakemapDialog){
-                        ShakeMapDialog(url = latestresult.value.getShakemapUrl()) {
-                            showShakemapDialog = false
-                        }
-                    }
                 }
 
                 1 -> {
                     //controllerVisibility = false
-                    GempaDirasakanList(result = result.value, viewModel = viewModel,mapControllerVisibile = {controllerVisibility = it})
+                    GempaDirasakanList(
+                        result = result.value,
+                        viewModel = viewModel,
+                        currentShakemapurl = {url ->currentShakemapUrl = url},
+                        mapControllerVisibile = {selected-> controllerVisibility = selected }
+                    )
 
                 }
 

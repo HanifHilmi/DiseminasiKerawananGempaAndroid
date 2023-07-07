@@ -16,9 +16,9 @@ object KerawananUrls {
         "" to ""
     )
     val tsunami: Map<String, String> = mapOf(
-        "Aceh" to "",
-        "Sumatera Utara" to "",
-        "Sumatera Barat" to "",
+        "Aceh" to "https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/krb_tsunami_aceh/FeatureServer/0",
+        "Sumatera Utara" to "https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/krb_tsunami_sumatera_utara/FeatureServer/0",
+        "Sumatera Barat" to "https://services7.arcgis.com/5U3WUC2hg7PzozWK/arcgis/rest/services/krb_tsunami_sumatera_barat/FeatureServer/0",
         "Riau" to "",
         "" to ""
     )

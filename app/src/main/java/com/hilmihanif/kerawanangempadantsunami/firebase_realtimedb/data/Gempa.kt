@@ -30,7 +30,8 @@ data class Gempa(
         return null
     }
 
-    fun getPoint():Point? = GeometryEngine.projectOrNull(getWgs84Point()!!,SpatialReference.webMercator())!!
+    fun getPoint():Point? = GeometryEngine.projectOrNull(getWgs84Point()!!,SpatialReference.webMercator())
+//    Point(VIEWPOINT_X, VIEWPOINT_Y, SpatialReference.wgs84())
 
     fun getShakemapUrl():String = "https://data.bmkg.go.id/DataMKG/TEWS/$Shakemap"
 

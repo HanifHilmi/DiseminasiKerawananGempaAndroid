@@ -26,6 +26,7 @@ import com.hilmihanif.kerawanangempadantsunami.mapTools.KerawananUrls
 import com.hilmihanif.kerawanangempadantsunami.mapTools.Location
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addFaultModelLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerawananGempaLayer
+import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerawananTsunamiLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerentananGerakanTanahLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.cekProvinsi
 import com.hilmihanif.kerawanangempadantsunami.mapTools.identifyKerawananLayers
@@ -42,7 +43,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 
 class MainMapViewModel : ViewModel() {
     private lateinit var toggleList: List<String>
@@ -278,14 +278,10 @@ class MainMapViewModel : ViewModel() {
                                 true to "Diluar Jangkauan Penentuan",5
                             )
                         }
-
                     }
                 }
-
             }
-
         }
-
     }
 
     private fun updateCurrentPinnedLocation(location : Location? = null){
@@ -293,7 +289,7 @@ class MainMapViewModel : ViewModel() {
             _mapUiState.update {
                 it.copy(
                     currentPinLocation = location,
-                    currentViewPoint = Viewpoint(location.wgs84Point!! /*offsetYPoint()*/)
+                    currentViewPoint = Viewpoint(offsetYPoint(location.wgs84Point!!,1.5))
                 )
             }
             _inputCardUiState.update {
@@ -329,10 +325,11 @@ class MainMapViewModel : ViewModel() {
         }
     }
 
-    private fun offsetYPoint(point:Point,offset:Double = -2.0 ):Point{
+    private fun offsetYPoint(point:Point,offset:Double):Point{
         return Point(
             point.x,
-            point.y + offset * 10.0.pow(5.0)
+            point.y - offset
+            //point.y + offset * 10.0.pow(5.0)
             , point.spatialReference
         )
 
@@ -396,6 +393,19 @@ class MainMapViewModel : ViewModel() {
         }
     }
 
+    private fun setKRBtsunamiLayer(url: String){
+        viewModelScope.launch {
+            val status = addKerawananTsunamiLayer(_mapUiState.value.map,url)
+            _resultCardUiState.update {
+                it.copy(
+                    tsuLoadStatus = status
+                )
+            }
+        }
+    }
+
+
+
     fun updateLayerLoadStatus(){
         when (_mapUiState.value.totalKRBLayerCount){
             1 -> {
@@ -403,6 +413,10 @@ class MainMapViewModel : ViewModel() {
             }
             2 ->{
                 val check = (_resultCardUiState.value.gempaLoadStatus.value == LoadStatus.Loaded) && (_resultCardUiState.value.gmLoadStatus.value == LoadStatus.Loaded)
+                _resultCardUiState.update { it.copy(isLayerLoaded = check) }
+            }
+            3 ->{
+                val check = (_resultCardUiState.value.gempaLoadStatus.value == LoadStatus.Loaded) && (_resultCardUiState.value.gmLoadStatus.value == LoadStatus.Loaded) && (_resultCardUiState.value.tsuLoadStatus.value == LoadStatus.Loaded)
                 _resultCardUiState.update { it.copy(isLayerLoaded = check) }
             }
         }
@@ -416,7 +430,7 @@ class MainMapViewModel : ViewModel() {
         var count =0
         if(urlGempa.isNotEmpty()) { setKRBGempaLayer(urlGempa) ;count++ }
         if(urlGM.isNotEmpty()) { setZkgtLayer(urlGM) ;count++}
-        if(urlTsunami.isNotEmpty()) {/*TODO(set Tsunami layer)*/count++}
+        if(urlTsunami.isNotEmpty()) { setKRBtsunamiLayer(urlTsunami);count++}
 
         _mapUiState.update {
             it.copy(
@@ -511,18 +525,18 @@ class MainMapViewModel : ViewModel() {
 
     }
 
-    private fun selectCurrentGempa(index:Int){
-
-        when(_firebaseResponse.value){
-            is DataState.Success -> {
-
-            }
-            is DataState.Empty -> TODO()
-            is DataState.Failure -> TODO()
-            is DataState.Loading -> TODO()
-
-        }
-    }
+//    private fun selectCurrentGempa(index:Int){
+//
+//        when(_firebaseResponse.value){
+//            is DataState.Success -> {
+//
+//            }
+//            is DataState.Empty -> TODO()
+//            is DataState.Failure -> TODO()
+//            is DataState.Loading -> TODO()
+//
+//        }
+//    }
 
     private fun fetchDataFromFirebaseDB() {
         val tempList = mutableListOf<Gempa>()

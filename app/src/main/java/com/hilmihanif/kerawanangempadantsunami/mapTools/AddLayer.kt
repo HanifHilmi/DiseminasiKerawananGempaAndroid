@@ -18,6 +18,7 @@ import com.hilmihanif.kerawanangempadantsunami.utils.FAULT_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
+import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 
@@ -89,7 +90,7 @@ suspend fun addKerawananGempaLayer(baseMap: ArcGISMap, url: String):StateFlow<Lo
 }
 
 @SuppressLint("ClickableViewAccessibility")
-suspend fun addKerentananGerakanTanahLayer(baseMap: ArcGISMap,url:String): StateFlow<LoadStatus> {
+suspend fun addKerentananGerakanTanahLayer(baseMap: ArcGISMap,url:String): StateFlow<LoadStatus>  {
     val gerakanTanahLayer : FeatureLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(url))
 
         while (gerakanTanahLayer.loadStatus.value != LoadStatus.Loaded){
@@ -138,8 +139,50 @@ suspend fun addKerentananGerakanTanahLayer(baseMap: ArcGISMap,url:String): State
     }
 }
 
-private fun addKerawananTsunamiLayer(baseMap: ArcGISMap,daerah:String){
+suspend fun addKerawananTsunamiLayer(baseMap: ArcGISMap,url: String): StateFlow<LoadStatus> {
+    val tsunamiLayer : FeatureLayer = FeatureLayer.createWithFeatureTable(ServiceFeatureTable(url))
 
+    while (tsunamiLayer.loadStatus.value != LoadStatus.Loaded){
+        delay(200)
+        Log.d(TEST_LOG,"tsunami layer loadStatus : ${tsunamiLayer.loadStatus.value}")
+        if (tsunamiLayer.loadStatus.value == LoadStatus.Loading)continue
+        else if(tsunamiLayer.loadStatus.value != LoadStatus.Loaded){
+            tsunamiLayer.retryLoad()
+        }
+    }
+    Log.d(TEST_LOG,"layers count: ${baseMap.operationalLayers.size}")
+
+
+
+    val sangatRendah = UniqueValue(
+        "Kerawanan Tsunami", "Sangat Rendah", KerawananSymbol.sangatRendah(), listOf("104")
+    )
+    val rendah = UniqueValue(
+        "Kerawanan Tsunami", "Rendah", KerawananSymbol.rendah(), listOf("103")
+    )
+    val sedang = UniqueValue(
+        "Kerawanan Tsunami", "Sedang", KerawananSymbol.menengah(), listOf("102")
+    )
+    val tinggi = UniqueValue(
+        "Kerawanan Tsunami", "Tinggi", KerawananSymbol.tinggi(), listOf("101")
+    )
+
+
+    val uniqueValueList = listOf(sangatRendah, rendah, sedang, tinggi)
+
+    val fieldNames = listOf("ID")
+    val renderer = UniqueValueRenderer(fieldNames, uniqueValueList)
+
+    tsunamiLayer.let {
+        it.renderer = renderer
+        it.opacity = 0.5f
+        while (baseMap.operationalLayers.size < TSUNAMI_LAYER_INDEX){
+            delay(200)
+        }
+        baseMap.operationalLayers.add(TSUNAMI_LAYER_INDEX,it)
+
+        return it.loadStatus
+    }
 }
 
 

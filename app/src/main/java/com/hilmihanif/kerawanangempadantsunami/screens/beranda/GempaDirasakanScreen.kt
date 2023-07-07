@@ -42,25 +42,34 @@ import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 
 
 @Composable
-fun GempaDirasakanList(result: DataState,viewModel:MainMapViewModel,mapControllerVisibile:(Boolean)->Unit ={}) {
-    var isItemClicked by remember { mutableStateOf(false)}
-    var gempaSelected by remember { mutableStateOf(Gempa())}
+fun GempaDirasakanList(
+    result: DataState,
+    viewModel: MainMapViewModel,
+    currentShakemapurl: (String) -> Unit = {},
+    mapControllerVisibile: (Boolean) -> Unit = {}
+) {
 
-    if (!isItemClicked){
+    var isItemClicked by remember { mutableStateOf(false) }
+    var gempaSelected by remember { mutableStateOf(Gempa()) }
+
+    if (!isItemClicked) {
         when (result) {
             is DataState.Failure -> FailureBox(result.message)
-            is DataState.Success -> GempaDirasakanBox(
-                gempaList = result.data,
-                onItemClicked = {
-                    gempaSelected = it
-                    isItemClicked = true
-                }
-            )
+            is DataState.Success -> {
+                GempaDirasakanBox(
+                    gempaList = result.data,
+                    onItemClicked = {
+                        gempaSelected = it
+                        isItemClicked = true
+                        currentShakemapurl(it.getShakemapUrl())
+                    }
+                )
+            }
 
             else -> LoadingBox()
         }
         mapControllerVisibile(false)
-    }else{
+    } else {
         mapControllerVisibile(true)
         GempaSelectedCard(
             title = "",
@@ -76,7 +85,6 @@ fun GempaDirasakanList(result: DataState,viewModel:MainMapViewModel,mapControlle
             isItemClicked = false
         }
     }
-
 
 
 }

@@ -1,6 +1,7 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -46,25 +47,26 @@ fun ResultCard(
         modifier = modifier,
         gempaKRBresult = resultCardUiState.identifiedLayerList.let {
             if (it.isNotEmpty()){
-                if (it.size >= GEMPA_LAYER_INDEX){
+                if (it.size >= GEMPA_LAYER_INDEX && it[GEMPA_LAYER_INDEX-1].containsKey("KRBID")){
                     it[GEMPA_LAYER_INDEX-1].getValue("KELAS").toString()
                 }else "Tidak Tersedia"
             }else "Loading.."
         },
         gmKRBResult = resultCardUiState.identifiedLayerList.let{
             if(it.isNotEmpty()){
-                if (it.size >= GM_LAYER_INDEX){
+                if (it.size >= GM_LAYER_INDEX && it[GM_LAYER_INDEX-1].containsKey("KLSGTN")){
                     it[GM_LAYER_INDEX-1].getValue("NAMOBJ").toString()
                 }else "TIdak Tersedia"
             } else "Loading.."
         },
         tsuKRBResult = resultCardUiState.identifiedLayerList.let{
             if(it.isNotEmpty()){
-                if (it.size >= TSUNAMI_LAYER_INDEX){
-                    it[TSUNAMI_LAYER_INDEX-1].getValue("").toString()
+                if (it.size >= TSUNAMI_LAYER_INDEX && it[TSUNAMI_LAYER_INDEX-1].containsKey("UNSUR")){
+                    it[TSUNAMI_LAYER_INDEX-1].getValue("KETERANGAN").toString()
                 }else "TIdak Tersedia"
             } else "Loading.."
         },
+        enableButton = resultCardUiState.identifiedLayerList.isNotEmpty(),
         onNewInputButtonClicked = {viewModel.resetInput()}
     )
 }
@@ -78,6 +80,7 @@ fun ResultCardContent(
     gempaKRBresult:String,
     gmKRBResult:String,
     tsuKRBResult:String,
+    enableButton:Boolean,
     onNewInputButtonClicked:() ->Unit ={},
 ) {
 
@@ -157,13 +160,19 @@ fun ResultCardContent(
                 }
             }
             Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-                Button(modifier = Modifier.weight(1f).padding(4.dp),
-                    onClick = { /*TODO*/ }
+                Button(modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp),
+                    onClick = { /*TODO*/ },
+                    enabled = enableButton
                 ) {
                     Text(text = "info Lengkap")
                 }
-                Button(modifier = Modifier.weight(1f).padding(4.dp),
-                    onClick = onNewInputButtonClicked
+                Button(modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp),
+                    onClick = onNewInputButtonClicked,
+                    enabled = enableButton
                 ) {
                     Text(text = "Input Baru")
                 }
@@ -184,6 +193,7 @@ fun ResultCardContent(
             )
         }
 
+        BackHandler(enableButton) { onNewInputButtonClicked() }
 
     }
 }
@@ -196,7 +206,8 @@ fun PreviewResultCard() {
             isLayerLoaded = true,
             gempaKRBresult = "Test",
             gmKRBResult = "Test",
-            tsuKRBResult = "Test"
+            tsuKRBResult = "Test",
+            enableButton = false
         )
     }
 

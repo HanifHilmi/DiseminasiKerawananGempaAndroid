@@ -45,6 +45,16 @@ fun MapViewWithCompose(
                         onPinch()
                     }
                 }
+                lifecycleOwner.lifecycleScope.launch {
+                    mapView.onDoubleTap.collect{
+                        onPinch()
+                    }
+                }
+                lifecycleOwner.lifecycleScope.launch {
+                    mapView.onDoubleTap.collect{
+                        onPinch()
+                    }
+                }
             }
         },
         update = {view->
