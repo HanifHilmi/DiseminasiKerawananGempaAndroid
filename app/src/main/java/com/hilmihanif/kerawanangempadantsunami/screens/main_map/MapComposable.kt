@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
+import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Viewpoint
@@ -32,6 +33,7 @@ fun MapViewWithCompose(
                 lifecycleOwner.lifecycle.addObserver(mapView)
                 //Log.d(TEST_MAP_BUG,"mapview.map ${mapView.map}")
                 mapView.map = arcGISMap
+                ArcGISEnvironment.applicationContext = context
                 //Log.d(TEST_MAP_BUG,"mapview.map ${mapView.map}")
                 setInitMapView(mapView)
                 lifecycleOwner.lifecycleScope.launch {

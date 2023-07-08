@@ -12,6 +12,7 @@ import com.arcgismaps.ApiKey
 import com.arcgismaps.LoadStatus
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.Viewpoint
+import com.arcgismaps.mapping.view.LocationDisplay
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.geocode.LocatorTask
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -46,6 +47,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalPermissionsApi::class)
 class MainMapViewModel : ViewModel() {
     private lateinit var toggleList: List<String>
 
@@ -56,9 +58,10 @@ class MainMapViewModel : ViewModel() {
     private val _firebaseResponse: MutableStateFlow<DataState> = MutableStateFlow(DataState.Empty)
 
     private val _mapView = MutableLiveData<MapView>()
+    private val _locationDisplay = MutableLiveData<LocationDisplay>()
     private val _mapScale = MutableStateFlow<Double>(0.0)
     private val _latestResponse = MutableStateFlow(Gempa())
-    //private val _locationDisplay = MutableStateFlow(LocationDisplay())
+
 
     val inputCardUiState= _inputCardUiState.asStateFlow()
     val mapUiState= _mapUiState.asStateFlow()
@@ -100,9 +103,13 @@ class MainMapViewModel : ViewModel() {
     fun setInitToggleState(list: List<String>, locationPermissionState: MultiplePermissionsState) {
         toggleList = list
 
+        Log.d(TEST_LOG,"state toggle ${_inputCardUiState.value.toggleButtonState.isEmpty()} ${_inputCardUiState.value.toggleButtonState}")
         if(_inputCardUiState.value.toggleButtonState.isEmpty()){
             _inputCardUiState.update {
                 if (locationPermissionState.allPermissionsGranted){
+                    updateToggleState(list[0],locationPermissionState)
+                    Log.d(TEST_LOG,"update toggle ${_inputCardUiState.value.toggleButtonState.isEmpty()} ${_inputCardUiState.value.toggleButtonState}")
+
                     it.copy(toggleButtonState = toggleList[0]) //TODO(check if location isenabled)
                 } else{
                     it.copy(toggleButtonState = toggleList[1])
@@ -110,8 +117,6 @@ class MainMapViewModel : ViewModel() {
             }
 
         }
-
-
 
         when(_inputCardUiState.value.toggleButtonState){
             toggleList[0] -> _inputCardUiState.update {
@@ -134,18 +139,61 @@ class MainMapViewModel : ViewModel() {
 
     @OptIn(ExperimentalPermissionsApi::class)
     fun updateToggleState(select:String, multiplePermissionsState: MultiplePermissionsState? = null){
-        if(select == toggleList[0]){
-            removeLastPin()
-            updateCurrentPinnedLocation()
-        }else{
-            updateCurrentPinnedLocation(_inputCardUiState.value.pinnedLocation)
-        }
+
         _inputCardUiState.update {
             it.copy(
                 toggleButtonState = select,
                 currentErrorAlert = false to "",
             )
         }
+        if(select == toggleList[0]){
+            try {
+                removeLastPin()
+            }catch (e:Exception){
+                Log.d(TEST_LOG,e.message.toString())
+            }
+            //updateCurrentPinnedLocation()
+            viewModelScope.launch {
+
+                if (multiplePermissionsState?.allPermissionsGranted == true){
+                    if (_locationDisplay.isInitialized){
+                        _locationDisplay.value?.let {locationDisplay->
+                            viewModelScope.launch {
+                                locationDisplay.dataSource.start().onSuccess {
+                                    Log.d(TEST_LOG,"location display succes")
+
+                                    var currentposition :Point?
+                                    do {
+                                        currentposition = locationDisplay.location.value?.position
+                                        _mapView.value?.let {
+                                            setOnTapPinLocation(currentposition, it, false)
+                                        }
+                                        delay(200)
+                                    } while (currentposition == null)
+
+                                    Log.d(TEST_LOG,"location x:${currentposition?.x} y:${currentposition?.y} ")
+                                }.onFailure {
+                                    Log.d(TEST_LOG,"location display failed ${it.message}")
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    _inputCardUiState.update {
+                        it.copy(
+                            currentInputDesc = "Lokasi Tidak Diaktifkan, silahkan gunakan opsi lain",
+                            isLocationDisabled = true
+                        )
+                    }
+                    setInputErrorAlert(true to "Lokasi tidak diaktifkan",5)
+                }
+            }
+
+
+        }else{
+            updateCurrentPinnedLocation(_inputCardUiState.value.pinnedLocation)
+        }
+
     }
 
     fun updateMapDesc(mapStatus: State<LoadStatus>){
@@ -243,41 +291,36 @@ class MainMapViewModel : ViewModel() {
         }
     }
 
+    /*
     @OptIn(ExperimentalPermissionsApi::class)
-    suspend fun setCurrentUserPinLocation(mapView:MapView?,locationPermissionState: MultiplePermissionsState){
-        if (locationPermissionState.allPermissionsGranted && mapView != null){
-
-        }
-    }
-
-    @OptIn(ExperimentalPermissionsApi::class)
-    fun setOnTapPinLocation(point: Point?, mapView: MapView, toggleList: List<String>) {
-        /*
-        Log.d(TEST_LOG,"viewtreeobserver = ${mapView.viewTreeObserver}")
-        Log.d(TEST_LOG,"mapView = $mapView")
-        if (mapView.viewTreeObserver.isAlive && !_mapView.isInitialized){
-            _mapView.value = mapView
-            Log.d(TEST_LOG,"_mapView= ${_mapView.value} isInit:${_mapView.isInitialized}")
-        }
-         */
+    suspend fun setCurrentUserPinLocation(mapView: MapView?, point: Point?){
 
         if (_mapUiState.value.locatorTask != null){
+            val result = reverseGeocoding(point!!,mapView,_mapUiState.value.locatorTask!!)
+            val cekProv = cekProvinsi(result)
+        }
+
+
+    }
+
+     */
+
+    @OptIn(ExperimentalPermissionsApi::class)
+    fun setOnTapPinLocation(point: Point?, mapView: MapView,istapped:Boolean) {
+
+        if (_mapUiState.value.locatorTask != null && point != null){
             viewModelScope.launch {
-                val result = reverseGeocoding(point!!,mapView,_mapUiState.value.locatorTask!!)
+                val result = reverseGeocoding(point,mapView,_mapUiState.value.locatorTask!!)
                 val cekProv = cekProvinsi(result)
-//            _mapUiState.update {
-//                it.copy(isTapPinEnabled = cekProv.second,)
-//            }
 
                 _mapUiState.value.let{ value->
-                    //updateCurrentGeocode(point,mapView, locatorTask)
                     Log.d(TEST_LOG,"reverse geocode when tap allowed:${value.isInputProcessNotDone} result: $result")
-                    Log.d(TEST_LOG,"point spatial ref:${point.spatialReference} result: $point")
+                    Log.d(TEST_LOG,"point spatial ref:${point?.spatialReference} result: $point")
 
                     updateLocatorLoading()
                     if (value.isInputProcessNotDone){
                         if (cekProv.second){
-                            updateToggleState( toggleList[1])
+                            if (istapped)updateToggleState(toggleList[1])
                             val wgsPoint = setPin(
                                 mapView = mapView,
                                 mapPoint = point
@@ -285,15 +328,20 @@ class MainMapViewModel : ViewModel() {
                                 setInputErrorAlert(null)
                                 if (mapView.graphicsOverlays.isNotEmpty()) mapView.graphicsOverlays.removeLast()
                                 mapView.graphicsOverlays.add(it)
-
                             }
                             val location = Location(cekProv.first,point = point, wgs84Point = wgsPoint)
                             updateCurrentPinnedLocation(location)
 
                         }else{
-                            setInputErrorAlert(
-                                true to "Diluar Jangkauan Penentuan",5
-                            )
+                            if(istapped){
+                                setInputErrorAlert(
+                                    true to "Diluar Jangkauan Penentuan",5
+                                )
+                            }else{
+                                setInputErrorAlert(
+                                    true to "Lokasi Anda diluar jangkauan",5
+                                )
+                            }
                         }
                     }
                 }
@@ -474,14 +522,42 @@ class MainMapViewModel : ViewModel() {
     }
 
 
-    fun setInitMapView(mapView: MapView){
+    fun setInitMapView(mapView: MapView,multiplePermissionsState: MultiplePermissionsState?){
 
         Log.d(TEST_LOG,"viewtreeobserver = ${mapView.viewTreeObserver}")
         Log.d(TEST_LOG,"mapView Init? = ${_mapView.isInitialized}")
         if (mapView.viewTreeObserver.isAlive && !_mapView.isInitialized){
             _mapView.value = mapView
+            _locationDisplay.value = mapView.locationDisplay
+
+            if (multiplePermissionsState?.allPermissionsGranted == true){
+                viewModelScope.launch {
+                    var isFailed = true
+                    do {
+                        _locationDisplay.value?.dataSource?.start()?.onSuccess {
+                            isFailed = false
+                            updateToggleState(toggleList[0],multiplePermissionsState)
+                        }?.onFailure{
+                            Log.d(TEST_LOG,it.message.toString())
+                            isFailed = true
+                        }
+                    }while (isFailed)
+                }
+                _inputCardUiState.update {
+                    it.copy(
+                        isLocationDisabled = false
+                    )
+                }
+            }else{
+                _inputCardUiState.update {
+                    it.copy(
+                        isLocationDisabled = true
+                    )
+                }
+            }
 
             Log.d(TEST_LOG,"_mapView= ${_mapView.value} isInit:${_mapView.isInitialized}")
+            Log.d(TEST_LOG,"_LocationDisplay= ${_locationDisplay.value!!.mapLocation} x:${_locationDisplay.value!!.mapLocation!!.x},y${_locationDisplay.value!!.mapLocation!!.y}")
         }
     }
 
@@ -493,7 +569,9 @@ class MainMapViewModel : ViewModel() {
 
     fun resetInput(){
         _inputCardUiState.update {
-            InputCardUiState()
+            InputCardUiState(
+                isLocationDisabled = _inputCardUiState.value.isLocationDisabled
+            )
         }
         _resultCardUiState.update {
             ResultCardUiState()
@@ -541,6 +619,7 @@ class MainMapViewModel : ViewModel() {
         setFaultLayer()
         setLocatorTask()
         fetchDataFromFirebaseDB()
+
 
 
     }

@@ -12,10 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 data class InputCardUiState(
     val pinnedLocation: Location? = null,
-    val toggleButtonState:String = "",
+    val toggleButtonState:String = "", //"Tap melalui peta",
     val currentErrorAlert: Pair<Boolean,String> = false to "",
     val currentInputDesc:String = "",
     val currentReverseGeocoding: Map<String, Any?> = mapOf(),
+    val isLocationDisabled:Boolean = true,
     val latTextFieldValue: TextFieldValue = TextFieldValue(""),
     val longTextFieldValue: TextFieldValue = TextFieldValue("")
 )

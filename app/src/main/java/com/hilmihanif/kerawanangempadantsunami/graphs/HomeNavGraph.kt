@@ -42,6 +42,7 @@ fun HomeNavGraph(navController: NavHostController,googleAuthUiClient: GoogleAuth
         composable(
             route = BottomBarScreen.Profil.route,
         ) {
+
             BackHandlerConfirmationDialog(currentActivity)
             if(isFirstTime){
                 navController.navigate(BottomBarScreen.Beranda.route)
@@ -84,7 +85,7 @@ fun HomeNavGraph(navController: NavHostController,googleAuthUiClient: GoogleAuth
             )
         }
         composable(route = BottomBarScreen.Kerawanan.route) {
-           //BackHandlerConfirmationDialog(currentActivity)
+           BackHandlerConfirmationDialog(currentActivity)
             MainMapScreen(
                 targetScreen = KERAWANAN_SCREEN,
             )

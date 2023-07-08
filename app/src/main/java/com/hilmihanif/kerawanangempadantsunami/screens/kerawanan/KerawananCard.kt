@@ -133,7 +133,7 @@ fun InputKoordinatCardContent(
         ) {
             MultiToggleButton(
                 currentSelection =  inputCardUiState.toggleButtonState ,
-                toggleStates = toggleList,
+                isLocationDisabled = inputCardUiState.isLocationDisabled,
                 onToggleChange = {
                     onToggleChange(it)
                 }

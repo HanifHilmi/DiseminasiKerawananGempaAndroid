@@ -64,7 +64,7 @@ fun MainMapScreen(
             //kerawananViewModel.setInitMapView(mapView)
             when (targetScreen) {
                 BERANDA_SCREEN -> { }//TODO
-                KERAWANAN_SCREEN -> {mainMapViewModel.setOnTapPinLocation(point, mapView, toggleList) }
+                KERAWANAN_SCREEN -> {mainMapViewModel.setOnTapPinLocation(point, mapView, istapped = true) }
             }
         },
         onPinch = { mainMapViewModel.updateMapScale() },
@@ -84,7 +84,7 @@ fun MainMapScreen(
             }
         },
         setInitMapView = {
-            mainMapViewModel.setInitMapView(it)
+            mainMapViewModel.setInitMapView(it,multiplePermissions)
         },
         isInputProcessNotDone = mapUiState.isInputProcessNotDone,
         currentScreen = targetScreen,

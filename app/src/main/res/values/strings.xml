@@ -9,10 +9,10 @@
     </string-array>
 
     <string-array name="keterangan_legenda">
-        <item>Zona Rawan Gempabumi Sangat Rendah</item>
-        <item>Zona Rawan Gempabumi Rendah</item>
-        <item>Zona Rawan Gempabumi Menengah</item>
-        <item>Zona Rawan Gempabumi Tinggi</item>
+        <item>Zona Kerawanan Sangat Rendah</item>
+        <item>Zona Kerawanan Rendah</item>
+        <item>Zona Kerawanan Menengah</item>
+        <item>Zona Kerawanan Tinggi</item>
     </string-array>
 
     <string-array name="beranda_tabs">
