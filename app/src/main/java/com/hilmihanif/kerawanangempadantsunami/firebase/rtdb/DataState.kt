@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data
+package com.hilmihanif.kerawanangempadantsunami.firebase.rtdb
 
 sealed class DataState{
     class Success(val data:MutableList<Gempa>) :DataState()

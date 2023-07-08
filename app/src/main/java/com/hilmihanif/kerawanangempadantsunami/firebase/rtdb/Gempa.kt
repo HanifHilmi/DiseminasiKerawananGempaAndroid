@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data
+package com.hilmihanif.kerawanangempadantsunami.firebase.rtdb
 
 import com.arcgismaps.geometry.GeometryEngine
 import com.arcgismaps.geometry.Point
@@ -30,7 +30,14 @@ data class Gempa(
         return null
     }
 
-    fun getPoint():Point? = GeometryEngine.projectOrNull(getWgs84Point()!!,SpatialReference.webMercator())
+    fun getPoint():Point?  {
+        val wgs = getWgs84Point()
+        return if (wgs !=null){
+            GeometryEngine.projectOrNull(wgs,SpatialReference.webMercator())
+        }else{
+            null
+        }
+    }
 //    Point(VIEWPOINT_X, VIEWPOINT_Y, SpatialReference.wgs84())
 
     fun getShakemapUrl():String = "https://data.bmkg.go.id/DataMKG/TEWS/$Shakemap"

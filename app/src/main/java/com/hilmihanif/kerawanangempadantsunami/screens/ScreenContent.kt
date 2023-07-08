@@ -30,6 +30,9 @@ fun ScreenContent(name: String, onClick: () -> Unit) {
 
 
 
+
+
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreenContent(){

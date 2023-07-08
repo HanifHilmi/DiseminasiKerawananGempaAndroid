@@ -41,5 +41,10 @@ data class MapUiState(
     val currentMapStatusDesc: String = "",
     val totalKRBLayerCount:Int = 0,
     val mapScale:Double = (MAP_MAX_SCALE+ MAP_MIN_SCALE)/2
+)
 
+
+data class SignInState(
+    val isSignInSuccessful:Boolean = false,
+    val signInError:String? = null,
 )

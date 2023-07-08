@@ -29,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,7 +49,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.layers.Layer
 import com.hilmihanif.kerawanangempadantsunami.R
-import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
+import com.hilmihanif.kerawanangempadantsunami.firebase.rtdb.Gempa
 import com.hilmihanif.kerawanangempadantsunami.screens.beranda.GempaSelectedCard
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
@@ -107,7 +109,7 @@ fun MapControllerContent(
         ) {
             var isLayersListExpanded by rememberSaveable { mutableStateOf(false) }
             var isZoomSliderExpanded by rememberSaveable { mutableStateOf(false) }
-            var arrowAngle by rememberSaveable { mutableStateOf(0f) }
+            var arrowAngle by rememberSaveable { mutableFloatStateOf(0f) }
             val maxWidth = if (isLayersListExpanded) .35f else .3f
 
 
@@ -145,7 +147,7 @@ fun MapControllerContent(
                     AnimatedVisibility(visible = isLayersListExpanded) {
                         Column {
                             val mutablelist = operationalLayers.map { it.isVisible }.toMutableStateList()
-                            var listCount by remember { mutableStateOf(0) }
+                            var listCount by remember { mutableIntStateOf(0) }
 
                             operationalLayers.forEachIndexed { index, layer ->
                                 listCount++

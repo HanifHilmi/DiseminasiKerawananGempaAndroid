@@ -20,12 +20,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hilmihanif.kerawanangempadantsunami.BottomBarScreen
+import com.hilmihanif.kerawanangempadantsunami.firebase.auth.GoogleAuthUiClient
 import com.hilmihanif.kerawanangempadantsunami.graphs.HomeNavGraph
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController = rememberNavController()) {
+fun HomeScreen(googleAuthUIClient:GoogleAuthUiClient,navController: NavHostController = rememberNavController()) {
     Scaffold(
         topBar = {},
         bottomBar = {
@@ -36,7 +37,7 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)){
-            HomeNavGraph(navController = navController)
+            HomeNavGraph(navController = navController,googleAuthUIClient)
         }
     }
 }

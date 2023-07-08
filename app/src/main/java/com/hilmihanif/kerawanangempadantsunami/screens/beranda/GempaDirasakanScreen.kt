@@ -36,8 +36,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hilmihanif.kerawanangempadantsunami.R
-import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.DataState
-import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
+import com.hilmihanif.kerawanangempadantsunami.firebase.rtdb.DataState
+import com.hilmihanif.kerawanangempadantsunami.firebase.rtdb.Gempa
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 
 

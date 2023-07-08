@@ -21,6 +21,8 @@ import com.arcgismaps.mapping.ArcGISMap
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.geocode.LocatorTask
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.screens.beranda.BerandaScreen
 import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananScreen
@@ -29,18 +31,26 @@ import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainMapScreen(
     targetScreen :String,
-    mainMapViewModel: MainMapViewModel = viewModel(),
+    mainMapViewModel: MainMapViewModel = viewModel<MainMapViewModel>(),
 ) {
+
     val toggleList = stringArrayResource(id = R.array.toggle_list).toList()
+    val multiplePermissions = rememberMultiplePermissionsState(
+        permissions = listOf(
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+        )
+    )
 
     val localcontext = LocalContext.current
     val mapUiState by mainMapViewModel.mapUiState.collectAsState()
 
     mainMapViewModel.updateMapDesc(mapUiState.map.loadStatus.collectAsState())
-    mainMapViewModel.setInitToggleState(toggleList)
+    mainMapViewModel.setInitToggleState(toggleList,multiplePermissions )
     mainMapViewModel.setInputDesc(localcontext)
     mainMapViewModel.updateLocatorLoading()
 
@@ -61,7 +71,7 @@ fun MainMapScreen(
         onInputToggleChange = {
             when (targetScreen) {
                 BERANDA_SCREEN -> {}
-                KERAWANAN_SCREEN -> {mainMapViewModel.updateToggleState(select = it) }
+                KERAWANAN_SCREEN -> {mainMapViewModel.updateToggleState(select = it, multiplePermissionsState  = multiplePermissions) }
             }
         },
         onProcessButtonClick = {

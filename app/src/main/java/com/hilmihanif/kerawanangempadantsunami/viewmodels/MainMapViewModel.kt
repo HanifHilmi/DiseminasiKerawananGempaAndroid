@@ -14,14 +14,16 @@ import com.arcgismaps.geometry.Point
 import com.arcgismaps.mapping.Viewpoint
 import com.arcgismaps.mapping.view.MapView
 import com.arcgismaps.tasks.geocode.LocatorTask
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.hilmihanif.kerawanangempadantsunami.BuildConfig
 import com.hilmihanif.kerawanangempadantsunami.R
-import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.DataState
-import com.hilmihanif.kerawanangempadantsunami.firebase_realtimedb.data.Gempa
+import com.hilmihanif.kerawanangempadantsunami.firebase.rtdb.DataState
+import com.hilmihanif.kerawanangempadantsunami.firebase.rtdb.Gempa
 import com.hilmihanif.kerawanangempadantsunami.mapTools.KerawananUrls
 import com.hilmihanif.kerawanangempadantsunami.mapTools.Location
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addFaultModelLayer
@@ -53,10 +55,10 @@ class MainMapViewModel : ViewModel() {
     private val _resultCardUiState = MutableStateFlow(ResultCardUiState())
     private val _firebaseResponse: MutableStateFlow<DataState> = MutableStateFlow(DataState.Empty)
 
-
     private val _mapView = MutableLiveData<MapView>()
     private val _mapScale = MutableStateFlow<Double>(0.0)
     private val _latestResponse = MutableStateFlow(Gempa())
+    //private val _locationDisplay = MutableStateFlow(LocationDisplay())
 
     val inputCardUiState= _inputCardUiState.asStateFlow()
     val mapUiState= _mapUiState.asStateFlow()
@@ -94,15 +96,21 @@ class MainMapViewModel : ViewModel() {
 
 
 
-    fun setInitToggleState(list: List<String>) {
+    @OptIn(ExperimentalPermissionsApi::class)
+    fun setInitToggleState(list: List<String>, locationPermissionState: MultiplePermissionsState) {
         toggleList = list
 
         if(_inputCardUiState.value.toggleButtonState.isEmpty()){
             _inputCardUiState.update {
-                //if (locationEnabled){ } TODO(check if location isenabled)
-                it.copy(toggleButtonState = toggleList[0])
+                if (locationPermissionState.allPermissionsGranted){
+                    it.copy(toggleButtonState = toggleList[0]) //TODO(check if location isenabled)
+                } else{
+                    it.copy(toggleButtonState = toggleList[1])
+                }
             }
+
         }
+
 
 
         when(_inputCardUiState.value.toggleButtonState){
@@ -124,7 +132,8 @@ class MainMapViewModel : ViewModel() {
         }
     }
 
-    fun updateToggleState(select:String){
+    @OptIn(ExperimentalPermissionsApi::class)
+    fun updateToggleState(select:String, multiplePermissionsState: MultiplePermissionsState? = null){
         if(select == toggleList[0]){
             removeLastPin()
             updateCurrentPinnedLocation()
@@ -234,7 +243,15 @@ class MainMapViewModel : ViewModel() {
         }
     }
 
-    fun setOnTapPinLocation(point: Point?, mapView: MapView,toggleList: List<String>) {
+    @OptIn(ExperimentalPermissionsApi::class)
+    suspend fun setCurrentUserPinLocation(mapView:MapView?,locationPermissionState: MultiplePermissionsState){
+        if (locationPermissionState.allPermissionsGranted && mapView != null){
+
+        }
+    }
+
+    @OptIn(ExperimentalPermissionsApi::class)
+    fun setOnTapPinLocation(point: Point?, mapView: MapView, toggleList: List<String>) {
         /*
         Log.d(TEST_LOG,"viewtreeobserver = ${mapView.viewTreeObserver}")
         Log.d(TEST_LOG,"mapView = $mapView")
@@ -463,6 +480,7 @@ class MainMapViewModel : ViewModel() {
         Log.d(TEST_LOG,"mapView Init? = ${_mapView.isInitialized}")
         if (mapView.viewTreeObserver.isAlive && !_mapView.isInitialized){
             _mapView.value = mapView
+
             Log.d(TEST_LOG,"_mapView= ${_mapView.value} isInit:${_mapView.isInitialized}")
         }
     }
@@ -470,6 +488,8 @@ class MainMapViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
     }
+
+
 
     fun resetInput(){
         _inputCardUiState.update {

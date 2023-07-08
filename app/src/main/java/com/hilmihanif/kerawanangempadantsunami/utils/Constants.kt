@@ -3,6 +3,8 @@ package com.hilmihanif.kerawanangempadantsunami.utils
 
 const val TEST_LOG = "KerawananGempadanTsunami_DebugTag"
 const val FIREBASE_TEST  = "FIREBASE_TEST"
+const val AUTH_TEST = "Test google sigIn"
+
 
 const val FAULT_LAYER_INDEX = 0
 const val GEMPA_LAYER_INDEX = 1
