@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
@@ -22,9 +23,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hilmihanif.kerawanangempadantsunami.R
@@ -52,11 +58,11 @@ fun GempaSelectedCard(
         Column() {
             Row(modifier = Modifier
                 .padding(12.dp)
-                .width(IntrinsicSize.Min),
+                .width(IntrinsicSize.Max),
             ) {
                 if (!isBackIcon){
                     Icon(imageVector = Icons.Default.Warning, contentDescription ="" )
-                    Text(text = title, style = MaterialTheme.typography.titleMedium)
+                    Text(text = title, style = MaterialTheme.typography.titleMedium, maxLines = 1)
                 }else{
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "",modifier.clickable { onBackIconClick() })
                 }
@@ -100,6 +106,44 @@ fun GempaSelectedCard(
                 Text(text = "Terkirim pada ${gempaData.Terkirim}",
                     style = MaterialTheme.typography.labelSmall,modifier= Modifier.padding(6.dp) )
             }
+
+            val anotatedString = buildAnnotatedString {
+                val str = "Sumber data:"
+                val url = "data.bmkg.go.id"
+                val startIndex = str.length
+                val endIndex = str.length + url.length
+
+                append(str + url)
+                //append(url)
+
+
+                addStyle(style = MaterialTheme.typography.labelSmall.toSpanStyle(),0,endIndex)
+                addStyle(style = SpanStyle(
+                    color = Color.Blue,
+                    textDecoration = TextDecoration.Underline
+                ),startIndex,endIndex)
+
+                addStringAnnotation(
+                    tag = "URL",
+                    annotation = "https://data.bmkg.go.id",
+                    startIndex,
+                    endIndex
+                )
+                //append()
+            }
+            val mUriHandler = LocalUriHandler.current
+            ClickableText(
+                text = anotatedString,
+                modifier= Modifier.padding(6.dp),
+                onClick = {
+                    anotatedString
+                        .getStringAnnotations("URL",it,it)
+                        .firstOrNull()?.let {  stringAnnotaton->
+                            mUriHandler.openUri(stringAnnotaton.item)
+                        }
+
+                }
+            )
         }
     }
 }
@@ -145,7 +189,8 @@ fun GempaTerkiniPrev() {
             DateTime = "2023-07-04T13:57:01+00:00",
             Kedalaman = "6 km",
             Dirasakan = "II-III Kota Bengkulu, II-III Kepahiang",
-            Potensi = "Gempa ini dirasakan untuk diteruskan pada masyarakat"
+            Potensi = "Gempa ini dirasakan untuk diteruskan pada masyarakat",
+            Terkirim = "test"
         )
     )
 }

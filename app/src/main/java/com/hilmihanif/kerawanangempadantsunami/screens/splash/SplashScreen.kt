@@ -133,7 +133,7 @@ fun SplashScreenContent(alpha:Float, modifier : Modifier = Modifier) {
             Text(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
-                text = "KERAWANAN GEMPA DAN TSUNAMI SUMBAGUT",
+                text = "KERAWANAN GEMPA DAN TSUNAMI DAERAH SUMBAGUT",
                 style = MaterialTheme.typography.titleLarge
             )
         }

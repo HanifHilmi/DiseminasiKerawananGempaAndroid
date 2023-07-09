@@ -74,7 +74,10 @@ fun HomeNavGraph(navController: NavHostController,googleAuthUiClient: GoogleAuth
                 onReSignIn ={
 
                 },
-                isLoggedIn = isLoggedIn
+                isLoggedIn = isLoggedIn,
+                aboutMeClicked = {
+
+                }
             )
         }
 

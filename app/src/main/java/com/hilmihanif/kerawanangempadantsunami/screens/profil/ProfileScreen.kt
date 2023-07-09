@@ -1,18 +1,28 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.profil
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -20,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.hilmihanif.kerawanangempadantsunami.BuildConfig
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.firebase.auth.UserData
 
@@ -29,19 +40,23 @@ fun ProfileScreen(
     isLoggedIn:Boolean,
     onSignOut:() -> Unit,
     onReSignIn:() -> Unit,
+    aboutMeClicked:() -> Unit,
 ) {
-
-    if (isLoggedIn){
-        userData?.run {
-            LoggedInProfilScreen(
-                userData = userData,
-                onSignOut = onSignOut
+    Column {
+        if (isLoggedIn){
+            userData?.run {
+                LoggedInProfilScreen(
+                    userData = userData,
+                    onSignOut = onSignOut
+                )
+            } ?: CircularProgressIndicator()
+        }else{
+            NotLoggedInProfileScreen(
+                onReSignIn = onReSignIn
             )
-        } ?: CircularProgressIndicator()
-    }else{
-        NotLoggedInProfileScreen(
-            onReSignIn = onReSignIn
-        )
+        }
+        SettingsContent()
+        AboutContent(aboutMeClicked = aboutMeClicked)
     }
 
 }
@@ -66,6 +81,94 @@ fun NotLoggedInProfileScreen(modifier:Modifier = Modifier, onReSignIn: () -> Uni
     }
 }
 
+
+@Composable
+fun SettingsContent() {
+    Column {
+
+        Divider(thickness = 4.dp)
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            text = "Pengaturan",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+
+        ) {
+            Text(text = "Notifikasi Gempa",style = MaterialTheme.typography.bodyLarge,)
+            Switch(
+                checked = true,
+                onCheckedChange = { },
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            Text(text = "Lokasi",style = MaterialTheme.typography.bodyLarge)
+            Switch(
+                checked = true,
+                onCheckedChange = { },
+            )
+        }
+    }
+}
+
+
+@Composable
+fun AboutContent(
+    aboutMeClicked:()->Unit={}
+) {
+    Column {
+
+        Divider(thickness = 4.dp)
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            text = "Tentang",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+
+            ) {
+            Icon(imageVector = Icons.Default.Info, contentDescription = "Info Icons")
+            Text(text = "Versi Aplikasi ${BuildConfig.VERSION_NAME}",style = MaterialTheme.typography.bodyLarge,)
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clickable {
+                    aboutMeClicked()
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ){
+            Icon(imageVector = Icons.Default.AccountBox, contentDescription = "Info Icons")
+            Text(text = "Tentang Saya", style = MaterialTheme.typography.bodyLarge)
+        }
+    }
+}
+
 @Composable
 fun LoggedInProfilScreen(
     modifier:Modifier = Modifier,
@@ -75,7 +178,7 @@ fun LoggedInProfilScreen(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(12.dp),
     ) {
         if (userData.profilePictureUrl != null){
@@ -116,16 +219,21 @@ fun LoggedInProfilScreen(
 @Preview
 @Composable
 fun PrevProfilScreen() {
-    ProfileScreen(
-        userData = UserData(
-            userId = "fjaoefjoai",
-            username = "TEST USER",
-            email = "testemail@gmail.com",
-            profilePictureUrl = ""
-        ),
-        isLoggedIn = false,
-        onSignOut = {},
-        onReSignIn = {}
-    )
+    MaterialTheme{
+        Surface {
+            ProfileScreen(
+                userData = UserData(
+                    userId = "fjaoefjoai",
+                    username = "TEST USER",
+                    email = "testemail_@gmail.com",
+                    profilePictureUrl = ""
+                ),
+                isLoggedIn = true,
+                onSignOut = {},
+                onReSignIn = {},
+                aboutMeClicked = {}
+            )
+        }
+    }
 }
 

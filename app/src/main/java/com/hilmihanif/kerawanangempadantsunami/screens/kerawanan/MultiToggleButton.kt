@@ -66,15 +66,6 @@ fun MultiToggleButton(
                     .fillMaxHeight()
                     .background(if (enabled) backgroundTint else disabledTint)
                     .padding(vertical = 6.dp, horizontal = 8.dp)
-                    .toggleable(
-                        value = isSelected,
-                        enabled = enabled,
-                        onValueChange = { selected ->
-                            if (selected) {
-                                onToggleChange(toggleState)
-                            }
-                        },
-                    )
                     .clickable {
                         if (!enabled) {
                             Toast
@@ -86,6 +77,16 @@ fun MultiToggleButton(
                                 .show()
                         }
                     }
+                    .toggleable(
+                        value = isSelected,
+                        enabled = enabled,
+                        onValueChange = { selected ->
+                            if (selected) {
+                                onToggleChange(toggleState)
+                            }
+                        },
+                    )
+
                     .weight(.3f)
             ) {
                 Text(

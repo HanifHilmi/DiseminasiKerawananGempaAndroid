@@ -1,6 +1,7 @@
 package com.hilmihanif.kerawanangempadantsunami.screens.splash
 
 import android.app.Activity
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -10,12 +11,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -133,7 +138,7 @@ fun GoogleSignInScreen(
             }
         },
         state = loginState.value,
-        onPassSignInClick = {
+        onSkipSignInClick = {
             onLoggedIn(false)
         }
     )
@@ -143,7 +148,7 @@ fun GoogleSignInScreen(
 fun SignInScreen(
     state: SignInState,
     onSignInClick:()-> Unit,
-    onPassSignInClick: () -> Unit
+    onSkipSignInClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -157,28 +162,44 @@ fun SignInScreen(
         }
     }
 
-    SignInContent(onSignInClick = onSignInClick, onPassSignInClick = onPassSignInClick)
+    SignInContent(
+        isNotLoading = !state.isSignInSuccessful,
+        onSignInClick = onSignInClick,
+        onSkipSignInClick = onSkipSignInClick
+    )
 
 }
 
 @Composable
 fun SignInContent(
+    isNotLoading:Boolean,
     onSignInClick: () -> Unit,
-    onPassSignInClick: () -> Unit
+    onSkipSignInClick: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
     ){
-        Column(modifier = Modifier
-            .align(Alignment.Center)
-            .width(IntrinsicSize.Min)) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .width(IntrinsicSize.Max),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Image(
-                painter = painterResource(id = R.drawable.img_placeholder),
+                painter = painterResource(id = R.drawable.img_loginscreen_art),
                 contentDescription = "",
+                modifier = Modifier.fillMaxHeight(.3f)
             )
-            Button(onClick = { onSignInClick() },modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()) {
+            Text(text = "Silahkan lakukan Login", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                modifier = Modifier
+                    .height(IntrinsicSize.Min)
+                    .fillMaxWidth(),
+                onClick = { onSignInClick() },
+                enabled = isNotLoading
+
+            ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_google),
                     contentDescription = "",
@@ -187,9 +208,12 @@ fun SignInContent(
                 Text(text = "Login dengan akun Google")
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { onPassSignInClick() },modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()) {
+            Button(
+                onClick = { onSkipSignInClick() }, modifier = Modifier
+                    .height(IntrinsicSize.Min)
+                    .fillMaxWidth()
+
+            ) {
 //                Icon(
 //                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_google),
 //                    contentDescription = "",
@@ -208,10 +232,13 @@ fun SignInContent(
 
 
 
+@Preview(uiMode = UI_MODE_NIGHT_YES, name = "dark")
 @Preview
 @Composable
 fun PrevLoginScreen() {
-//    LoginContent(onClick = { }, onSignUpClick = { }) {
-//    }
-    SignInContent(onSignInClick = {}, onPassSignInClick = {})
+MaterialTheme {
+    Surface {
+        SignInContent(isNotLoading = true,onSignInClick = {}, onSkipSignInClick = {})
+    }
+}
 }
