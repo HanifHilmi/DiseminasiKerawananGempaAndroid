@@ -354,7 +354,7 @@ class MainMapViewModel : ViewModel() {
             _mapUiState.update {
                 it.copy(
                     currentPinLocation = location,
-                    currentViewPoint = Viewpoint(offsetYPoint(location.wgs84Point!!,1.5))
+                    currentViewPoint = Viewpoint(offsetYPoint(location.wgs84Point!!,0.0))
                 )
             }
             _inputCardUiState.update {

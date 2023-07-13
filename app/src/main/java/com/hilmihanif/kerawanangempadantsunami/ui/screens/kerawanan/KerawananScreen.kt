@@ -1,11 +1,11 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.kerawanan
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arcgismaps.tasks.geocode.LocatorTask
-import com.hilmihanif.kerawanangempadantsunami.screens.main_map.MapControllerScreen
+import com.hilmihanif.kerawanangempadantsunami.ui.screens.main_map.MapControllerScreen
 import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 

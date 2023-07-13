@@ -3,8 +3,9 @@ package com.hilmihanif.kerawanangempadantsunami
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
-import com.hilmihanif.kerawanangempadantsunami.graphs.RootNavigationGraph
+import com.hilmihanif.kerawanangempadantsunami.ui.navGraphs.RootNavigationGraph
 import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,7 +15,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             KerawananGempaDanTsunamiTheme {
-                RootNavigationGraph(navController = rememberNavController())
+                Surface{
+                    RootNavigationGraph(navController = rememberNavController())
+                }
             }
         }
     }

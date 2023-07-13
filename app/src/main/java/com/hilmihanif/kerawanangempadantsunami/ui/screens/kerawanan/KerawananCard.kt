@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.kerawanan
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.kerawanan
 
 
 import androidx.compose.foundation.Image

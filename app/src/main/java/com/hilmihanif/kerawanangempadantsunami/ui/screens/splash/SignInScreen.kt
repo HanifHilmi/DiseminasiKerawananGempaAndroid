@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.splash
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.splash
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES

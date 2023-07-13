@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.home
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -21,7 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hilmihanif.kerawanangempadantsunami.BottomBarScreen
 import com.hilmihanif.kerawanangempadantsunami.firebase.auth.GoogleAuthUiClient
-import com.hilmihanif.kerawanangempadantsunami.graphs.HomeNavGraph
+import com.hilmihanif.kerawanangempadantsunami.ui.navGraphs.HomeNavGraph
 
 
 @OptIn(ExperimentalMaterial3Api::class)

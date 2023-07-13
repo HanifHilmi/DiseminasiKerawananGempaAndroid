@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.main_map
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.main_map
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

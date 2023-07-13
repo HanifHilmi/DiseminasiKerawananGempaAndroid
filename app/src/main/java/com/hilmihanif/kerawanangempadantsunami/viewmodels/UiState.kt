@@ -25,6 +25,7 @@ data class ResultCardUiState(
     val identifiedLayerList:  List<Map<String, Any?>> = emptyList(),
     val selectedProv :String = "",
     val isLayerLoaded :Boolean = false,
+    val moreInfo:Boolean = false,
     val gempaLoadStatus: StateFlow<LoadStatus> = MutableStateFlow(LoadStatus.NotLoaded),
     val gmLoadStatus: StateFlow<LoadStatus> = MutableStateFlow(LoadStatus.NotLoaded),
     val tsuLoadStatus: StateFlow<LoadStatus> = MutableStateFlow(LoadStatus.NotLoaded),

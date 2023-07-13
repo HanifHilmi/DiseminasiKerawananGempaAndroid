@@ -1,16 +1,20 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.splash
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.splash
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -136,6 +141,24 @@ fun SplashScreenContent(alpha:Float, modifier : Modifier = Modifier) {
                 text = "KERAWANAN GEMPA DAN TSUNAMI DAERAH SUMBAGUT",
                 style = MaterialTheme.typography.titleLarge
             )
+            Text(
+                textAlign = TextAlign.Center,
+                text = "oleh:\nHilmi Hanif",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(Modifier.padding(6.dp))
+            Row{
+                Image(
+                    modifier = Modifier.width(30.dp),
+                    painter = painterResource(id = R.drawable.logo_bmkg),
+                    contentDescription = "Logo Bmkg"
+                )
+                Image(
+                    modifier = Modifier.width(30.dp),
+                    painter = painterResource(id = R.drawable.logo_stmkg),
+                    contentDescription = "Logo Stmkg"
+                )
+            }
         }
 
     }

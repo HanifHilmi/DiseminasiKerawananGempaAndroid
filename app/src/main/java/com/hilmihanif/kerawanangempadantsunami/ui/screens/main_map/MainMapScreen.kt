@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.main_map
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.main_map
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
@@ -24,8 +24,8 @@ import com.arcgismaps.tasks.geocode.LocatorTask
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.hilmihanif.kerawanangempadantsunami.R
-import com.hilmihanif.kerawanangempadantsunami.screens.beranda.BerandaScreen
-import com.hilmihanif.kerawanangempadantsunami.screens.kerawanan.KerawananScreen
+import com.hilmihanif.kerawanangempadantsunami.ui.screens.beranda.BerandaScreen
+import com.hilmihanif.kerawanangempadantsunami.ui.screens.kerawanan.KerawananScreen
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 import com.hilmihanif.kerawanangempadantsunami.utils.BERANDA_SCREEN
 import com.hilmihanif.kerawanangempadantsunami.utils.KERAWANAN_SCREEN

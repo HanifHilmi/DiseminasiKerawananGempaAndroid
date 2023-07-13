@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.graphs
+package com.hilmihanif.kerawanangempadantsunami.ui.navGraphs
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.android.gms.auth.api.identity.Identity
 import com.hilmihanif.kerawanangempadantsunami.firebase.auth.GoogleAuthUiClient
-import com.hilmihanif.kerawanangempadantsunami.screens.home.HomeScreen
+import com.hilmihanif.kerawanangempadantsunami.ui.screens.home.HomeScreen
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {

@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.beranda
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.beranda
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background

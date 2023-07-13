@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens
+package com.hilmihanif.kerawanangempadantsunami.ui.screens
 
 
 import androidx.compose.foundation.clickable

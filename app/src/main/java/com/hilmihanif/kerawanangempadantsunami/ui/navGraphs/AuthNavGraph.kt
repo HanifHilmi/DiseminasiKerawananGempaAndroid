@@ -1,12 +1,12 @@
-package com.hilmihanif.kerawanangempadantsunami.graphs
+package com.hilmihanif.kerawanangempadantsunami.ui.navGraphs
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.hilmihanif.kerawanangempadantsunami.firebase.auth.GoogleAuthUiClient
-import com.hilmihanif.kerawanangempadantsunami.screens.splash.GoogleSignInScreen
-import com.hilmihanif.kerawanangempadantsunami.screens.splash.SplashScreen
+import com.hilmihanif.kerawanangempadantsunami.ui.screens.splash.GoogleSignInScreen
+import com.hilmihanif.kerawanangempadantsunami.ui.screens.splash.SplashScreen
 
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController,googleAuthUiClient: GoogleAuthUiClient) {
@@ -74,5 +74,4 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController,googleAuthUiCl
 sealed class AuthScreen(val route: String) {
     object Login : AuthScreen(route = "LOGIN")
     object Splash : AuthScreen(route = "SIGN_UP")
-    object Forgot : AuthScreen(route = "FORGOT")
 }

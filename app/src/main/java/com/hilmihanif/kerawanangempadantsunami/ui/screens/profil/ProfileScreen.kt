@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.profil
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.profil
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.hilmihanif.kerawanangempadantsunami.screens.main_map
+package com.hilmihanif.kerawanangempadantsunami.ui.screens.main_map
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.arcgismaps.mapping.layers.Layer
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.firebase.rtdb.Gempa
-import com.hilmihanif.kerawanangempadantsunami.screens.beranda.GempaSelectedCard
+import com.hilmihanif.kerawanangempadantsunami.ui.screens.beranda.GempaSelectedCard
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunamiTheme
 import com.hilmihanif.kerawanangempadantsunami.utils.*
