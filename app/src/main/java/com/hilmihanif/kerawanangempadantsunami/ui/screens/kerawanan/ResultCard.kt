@@ -1,14 +1,19 @@
 package com.hilmihanif.kerawanangempadantsunami.ui.screens.kerawanan
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -34,6 +39,7 @@ import com.hilmihanif.kerawanangempadantsunami.ui.theme.KerawananGempaDanTsunami
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.STATIC_LAYER_COUNT
+import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.MainMapViewModel
 
@@ -45,6 +51,8 @@ fun ResultCard(
     val resultCardUiState by viewModel.resultCardUiState.collectAsState()
     val mapUiState by viewModel.mapUiState.collectAsState()
     var moreinfoisVisible by rememberSaveable { mutableStateOf(false)}
+    var penjelasanDialog by rememberSaveable { mutableStateOf(false)    }
+    var penjelasanDialogTitle  by rememberSaveable { mutableStateOf("")    }
 
     lateinit var gempaMap:Map<String,Any?>
     lateinit var gmMap:Map<String,Any?>
@@ -72,7 +80,9 @@ fun ResultCard(
         modifier = modifier,
         gempaKRBresult = resultCardUiState.identifiedLayerList.let {
             if (it.isNotEmpty()){
+                Log.d(TEST_LOG,"identifiedLayerList result")
                 if (it.size >= GEMPA_LAYER_INDEX && it[GEMPA_LAYER_INDEX-STATIC_LAYER_COUNT].containsKey("KRBID")){
+                    Log.d(TEST_LOG,"identifiedLayerList result ${it[GEMPA_LAYER_INDEX- STATIC_LAYER_COUNT].getValue("KELAS").toString()}")
                     it[GEMPA_LAYER_INDEX- STATIC_LAYER_COUNT].getValue("KELAS").toString()
                 }else "Tidak Tersedia"
             }else "Loading.."
@@ -97,6 +107,10 @@ fun ResultCard(
             if (resultCardUiState.isLayerLoaded){
                 moreinfoisVisible = true
             }
+        },
+        showPenjelasan = {
+            penjelasanDialogTitle = it
+            penjelasanDialog = true
         }
     )
     DetailInfoScreen(
@@ -122,6 +136,22 @@ fun ResultCard(
         }
     )
 
+    if(penjelasanDialog && penjelasanDialogTitle.isNotEmpty()){
+        PenjelasanAlertDialog(
+            title = penjelasanDialogTitle,
+            icon = when {
+                penjelasanDialogTitle.contains("gempa",ignoreCase = true) -> { ImageVector.vectorResource(id = R.drawable.img_earthquake ) }
+                penjelasanDialogTitle.contains("tanah") -> { ImageVector.vectorResource(id = R.drawable.img_groundmotion) }
+                else -> { ImageVector.vectorResource(id = R.drawable.img_tsunami) }
+            },
+            onDismiss = {
+                penjelasanDialog = false
+            }
+        )
+    }
+
+
+
 }
 
 
@@ -134,8 +164,10 @@ fun ResultCardContent(
     gmKRBResult:String,
     tsuKRBResult:String,
     enableButton:Boolean,
+    showPenjelasan:(String)->Unit = {},
     moreInfoButton:()->Unit = {},
     onNewInputButtonClicked:() ->Unit ={},
+
 ) {
 
     Card(
@@ -144,7 +176,6 @@ fun ResultCardContent(
             .padding(8.dp)
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(12.dp))
             .animateContentSize()
-
     ) {
         if (isLayerLoaded){
             Text(
@@ -158,7 +189,9 @@ fun ResultCardContent(
             ) {
                 val imageModifier = Modifier.padding(horizontal = 20.dp)
 
-                Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp)) {
                     Text(
                         text = stringResource(id = R.string.result_gempatitle),
                         textAlign = TextAlign.Center,
@@ -170,7 +203,7 @@ fun ResultCardContent(
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.img_earthquake),
                         contentDescription = "",
-                        modifier = imageModifier,
+                        modifier = imageModifier.clickable { showPenjelasan("Kerawanan Gempabumi") },
                     )
                     Text(
                         text = gempaKRBresult,
@@ -178,7 +211,9 @@ fun ResultCardContent(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp)) {
                     Text(
                         text = stringResource(id = R.string.result_gmtitle),
                         textAlign = TextAlign.Center,
@@ -187,7 +222,7 @@ fun ResultCardContent(
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.img_groundmotion),
                         contentDescription = "",
-                        modifier = imageModifier,
+                        modifier = imageModifier.clickable { showPenjelasan("Kerawanan Gerakan Tanah") },
                     )
                     Text(
                         text = gmKRBResult,
@@ -195,7 +230,9 @@ fun ResultCardContent(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .padding(4.dp)) {
                     Text(
                         text = stringResource(id = R.string.result_tsutitle),
                         textAlign = TextAlign.Center,
@@ -204,7 +241,7 @@ fun ResultCardContent(
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.img_tsunami),
                         contentDescription = "",
-                        modifier = imageModifier,
+                        modifier = imageModifier.clickable { showPenjelasan("Kerawanan Tsunami") },
                     )
                     Text(
                         text = tsuKRBResult,
@@ -218,8 +255,9 @@ fun ResultCardContent(
                     .weight(1f)
                     .padding(4.dp),
                     onClick = { moreInfoButton() },
-                    enabled = enableButton
+                    enabled = enableButton,
                 ) {
+                    Icon(imageVector = Icons.Default.Info, contentDescription = "")
                     Text(text = "info Lengkap")
                 }
                 Button(modifier = Modifier
@@ -228,6 +266,7 @@ fun ResultCardContent(
                     onClick = onNewInputButtonClicked,
                     enabled = enableButton
                 ) {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = "")
                     Text(text = "Input Baru")
                 }
             }
@@ -249,8 +288,13 @@ fun ResultCardContent(
 
         BackHandler(enableButton) { onNewInputButtonClicked() }
 
+
     }
 }
+
+
+
+
 @Preview(name = "Dark Mode",uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(name = "Light Mode")
 @Composable
@@ -261,7 +305,7 @@ fun PreviewResultCard() {
             gempaKRBresult = "Test",
             gmKRBResult = "Test",
             tsuKRBResult = "Test",
-            enableButton = false
+            enableButton = true
         )
     }
 

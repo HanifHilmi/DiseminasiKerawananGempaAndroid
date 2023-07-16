@@ -41,7 +41,7 @@ data class MapUiState(
     val locatorTask: LocatorTask? = null,
     val currentViewPoint : Viewpoint = Viewpoint(VIEWPOINT_X, VIEWPOINT_Y, 5 * MAP_MAX_SCALE),
     val currentMapStatusDesc: String = "",
-    val totalKRBLayerCount:Int = 0,
+    val totalLayerCount:Int = 0,
     val mapScale:Double = (MAP_MAX_SCALE+ MAP_MIN_SCALE)/2
 )
 

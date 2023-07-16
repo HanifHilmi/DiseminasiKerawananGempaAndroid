@@ -6,10 +6,17 @@ const val FIREBASE_TEST  = "FIREBASE_TEST"
 const val AUTH_TEST = "Test google sigIn"
 
 const val STATIC_LAYER_COUNT = 1
+
+// static layer
 const val FAULT_LAYER_INDEX = 0
-const val GEMPA_LAYER_INDEX = 1
-const val GM_LAYER_INDEX = 2
-const val TSUNAMI_LAYER_INDEX = 3
+
+
+
+const val GEMPA_LAYER_INDEX = STATIC_LAYER_COUNT
+const val GM_LAYER_INDEX = GEMPA_LAYER_INDEX + 1
+const val TSUNAMI_LAYER_INDEX = GM_LAYER_INDEX + 1
+
+const val SEISMISITAS2022_INDEX = TSUNAMI_LAYER_INDEX
 
 
 

@@ -6,6 +6,7 @@ import com.arcgismaps.mapping.view.MapView
 import com.hilmihanif.kerawanangempadantsunami.utils.GEMPA_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.GM_LAYER_INDEX
 import com.hilmihanif.kerawanangempadantsunami.utils.IDENTIFIER_TOLERANCE
+import com.hilmihanif.kerawanangempadantsunami.utils.STATIC_LAYER_COUNT
 import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import com.hilmihanif.kerawanangempadantsunami.utils.TSUNAMI_LAYER_INDEX
 import kotlinx.coroutines.delay
@@ -17,12 +18,12 @@ suspend fun identifyKerawananLayers(mapView:MapView,mapPoint: Point,layersCount:
     delay(200)
 
     mapView.map!!.operationalLayers.let {
-        while (it.size-1 < layersCount){
+        while (it.size< layersCount){
             delay(100)
-            Log.d(TEST_LOG,"Only 1 layers detected maplayersize${it.size}, layerscount:${layersCount}")
+            Log.d(TEST_LOG,"Only static layers detected maplayersize${it.size}, layerscount:${layersCount}")
         }
-        if (it.size >= 2) {
-            Log.d(TEST_LOG,"2nd layers detected")
+        if (it.size > STATIC_LAYER_COUNT) {
+            Log.d(TEST_LOG,"1st layers detected")
             do{
                 val identifyGempaLayerResult = mapView.identifyLayer(
                     it[GEMPA_LAYER_INDEX],
@@ -45,8 +46,8 @@ suspend fun identifyKerawananLayers(mapView:MapView,mapPoint: Point,layersCount:
                 }
                 delay(200)
             }while (true)
-            if (it.size >= 3) {
-                Log.d(TEST_LOG,"3rd layers detected")
+            if (it.size > 3) {
+                Log.d(TEST_LOG,"2nd layers detected")
                 do{
                     val identifyGMLayerResult = mapView.identifyLayer(
                         it[GM_LAYER_INDEX],
@@ -70,8 +71,8 @@ suspend fun identifyKerawananLayers(mapView:MapView,mapPoint: Point,layersCount:
                     }
                     delay(200)
                 }while (true)
-                if (it.size >= 4) {
-                    Log.d(TEST_LOG,"4th layers detected")
+                if (it.size in 3..4) {
+                    Log.d(TEST_LOG,"3rd layers detected")
                     var count = 0
                     do{
                         val identifyTsuLayerResult = mapView.identifyLayer(

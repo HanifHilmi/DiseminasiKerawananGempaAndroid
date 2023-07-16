@@ -31,6 +31,7 @@ import com.hilmihanif.kerawanangempadantsunami.mapTools.addFaultModelLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerawananGempaLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerawananTsunamiLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.addKerentananGerakanTanahLayer
+import com.hilmihanif.kerawanangempadantsunami.mapTools.addSeismisitasLayer
 import com.hilmihanif.kerawanangempadantsunami.mapTools.cekProvinsi
 import com.hilmihanif.kerawanangempadantsunami.mapTools.identifyKerawananLayers
 import com.hilmihanif.kerawanangempadantsunami.mapTools.removeLastPin
@@ -40,6 +41,7 @@ import com.hilmihanif.kerawanangempadantsunami.mapTools.setGempaPin
 import com.hilmihanif.kerawanangempadantsunami.mapTools.setPin
 import com.hilmihanif.kerawanangempadantsunami.utils.FIREBASE_TEST
 import com.hilmihanif.kerawanangempadantsunami.utils.MAP_MAX_SCALE
+import com.hilmihanif.kerawanangempadantsunami.utils.STATIC_LAYER_COUNT
 import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -171,7 +173,8 @@ class MainMapViewModel : ViewModel() {
                                         delay(200)
                                     } while (currentposition == null)
 
-                                    Log.d(TEST_LOG,"location x:${currentposition?.x} y:${currentposition?.y} ")
+                                    Log.d(TEST_LOG,"location x:${currentposition.x} y:${currentposition.y} ")
+                                    Log.d(TEST_LOG,"location x:${currentposition.x} y:${currentposition.y} ")
                                 }.onFailure {
                                     Log.d(TEST_LOG,"location display failed ${it.message}")
                                 }
@@ -260,9 +263,7 @@ class MainMapViewModel : ViewModel() {
     fun removeAllGempaPin(){
         if(_mapView.isInitialized){
 
-            _mapView.value?.let{mapView ->
-                mapView.graphicsOverlays.clear()
-            }
+            _mapView.value?.graphicsOverlays?.clear()
         }
     }
 
@@ -435,6 +436,11 @@ class MainMapViewModel : ViewModel() {
 
     private fun setFaultLayer(){
         addFaultModelLayer(_mapUiState.value.map)
+        _mapUiState.update {
+            it.copy(
+                totalLayerCount = _mapUiState.value.totalLayerCount.inc()
+            )
+        }
     }
 
     private fun setKRBGempaLayer(url: String){
@@ -445,6 +451,12 @@ class MainMapViewModel : ViewModel() {
                     gempaLoadStatus = status
                 )
             }
+
+            _mapUiState.update {
+                it.copy(totalLayerCount = _mapUiState.value.totalLayerCount.inc())
+            }
+            Log.d(TEST_LOG," set Krb gempa ${status.value} ${_mapUiState.value.totalLayerCount}")
+
         }
     }
     private fun setZkgtLayer(url: String){
@@ -455,6 +467,11 @@ class MainMapViewModel : ViewModel() {
                     gmLoadStatus = status
                 )
             }
+
+            _mapUiState.update {
+                it.copy(totalLayerCount = _mapUiState.value.totalLayerCount.inc())
+            }
+
         }
     }
 
@@ -466,13 +483,28 @@ class MainMapViewModel : ViewModel() {
                     tsuLoadStatus = status
                 )
             }
+
+            _mapUiState.update {
+                it.copy(totalLayerCount = _mapUiState.value.totalLayerCount.inc())
+            }
+
+        }
+    }
+
+    private fun setSeismisitasLayer(count :Int){
+        viewModelScope.launch{
+            while(count != _mapUiState.value.totalLayerCount){
+                addSeismisitasLayer(_mapUiState.value.map,count)
+            }
+
         }
     }
 
 
 
     fun updateLayerLoadStatus(){
-        when (_mapUiState.value.totalKRBLayerCount){
+        Log.d(TEST_LOG,"update layer status ${_mapUiState.value.totalLayerCount}")
+        when (_mapUiState.value.totalLayerCount- STATIC_LAYER_COUNT){
             1 -> {
                 _resultCardUiState.update { it.copy(isLayerLoaded = (_resultCardUiState.value.gempaLoadStatus.value == LoadStatus.Loaded)) }
             }
@@ -480,7 +512,7 @@ class MainMapViewModel : ViewModel() {
                 val check = (_resultCardUiState.value.gempaLoadStatus.value == LoadStatus.Loaded) && (_resultCardUiState.value.gmLoadStatus.value == LoadStatus.Loaded)
                 _resultCardUiState.update { it.copy(isLayerLoaded = check) }
             }
-            3 ->{
+            else ->{
                 val check = (_resultCardUiState.value.gempaLoadStatus.value == LoadStatus.Loaded) && (_resultCardUiState.value.gmLoadStatus.value == LoadStatus.Loaded) && (_resultCardUiState.value.tsuLoadStatus.value == LoadStatus.Loaded)
                 _resultCardUiState.update { it.copy(isLayerLoaded = check) }
             }
@@ -492,25 +524,33 @@ class MainMapViewModel : ViewModel() {
         val urlGempa = KerawananUrls.gempa.getValue(prov)
         val urlGM = KerawananUrls.gerakanTanah.getValue(prov)
         val urlTsunami = KerawananUrls.tsunami.getValue(prov)
-        var count =0
+        var count = STATIC_LAYER_COUNT
         if(urlGempa.isNotEmpty()) { setKRBGempaLayer(urlGempa) ;count++ }
         if(urlGM.isNotEmpty()) { setZkgtLayer(urlGM) ;count++}
         if(urlTsunami.isNotEmpty()) { setKRBtsunamiLayer(urlTsunami);count++}
 
+
+//        setSeismisitasLayer(count)
+//        count++
+
+
         _mapUiState.update {
             it.copy(
                 isInputProcessNotDone = false,
-                totalKRBLayerCount = count
+                //totalLayerCount = count
             )
         }
-        identifyLayers()
+
+
+        identifyLayers(count)
     }
 
 
-    private fun identifyLayers(){
+
+    private fun identifyLayers(krbcount:Int){
         viewModelScope.launch {
             if (_mapView.isInitialized){
-                val temp = identifyKerawananLayers(_mapView.value!!,_mapUiState.value.currentPinLocation!!.point,_mapUiState.value.totalKRBLayerCount)
+                val temp = identifyKerawananLayers(_mapView.value!!,_mapUiState.value.currentPinLocation!!.point,krbcount)
                 _resultCardUiState.update {
                     it.copy(
                         identifiedLayerList = temp
@@ -584,10 +624,17 @@ class MainMapViewModel : ViewModel() {
         }
 
 
-
+        Log.d(TEST_LOG,"new Input ${_mapUiState.value.totalLayerCount}")
         if (_mapView.isInitialized){
-            for (i in (1.._mapUiState.value.totalKRBLayerCount)){
-                _mapUiState.value.map.operationalLayers.removeLast()
+            Log.d(TEST_LOG,"new Input2 ${_mapUiState.value.totalLayerCount}")
+            for (i in (_mapUiState.value.totalLayerCount-1 downTo STATIC_LAYER_COUNT)){
+
+                _mapUiState.value.map.operationalLayers.let{
+                    if(it.isNotEmpty()) it.removeAt(i)
+                    _mapUiState.update {state->
+                        state.copy(totalLayerCount = state.totalLayerCount.dec())
+                    }
+                }
                 Log.d(TEST_LOG,"Last Layer removed")
             }
         }

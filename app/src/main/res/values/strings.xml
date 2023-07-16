@@ -21,6 +21,53 @@
         <item>Magnitude \u2265 5.0</item>
     </string-array>
 
+
+
+    <string name="krb">Kawasan Rawan Bencana Gempa Bumi </string>
+    <string-array name="title_penjelasan_gempa">
+        <item>Rawan bencana gempabumi Sangat Rendah:</item>
+        <item>Rawan bencana gempabumi Rendah:</item>
+        <item>Rawan bencana gempabumi Menengah:</item>
+        <item>Rawan bencana gempabumi Tinggi:</item>
+        <item>Saran penggunaan:</item>
+    </string-array>
+    <string-array name="penjelasan_gempa">
+        <item>Kawasan berpotensi terlanda goncangan gempa bumi dengan Skala intensitas lebih kecil dari V MMI (Modified Mercally Intensity). Tersusun Oleh batuan Tersier dan Pra Tersier dan morfologi perbukitan.</item>
+        <item>Kawasan berpotensi terlanda goncangan gempa bumi dengan Skala intensitas V-VI MMI (Modified Mercally Intensity). Pada umumnya tersusun Oleh batuan Tersier.</item>
+        <item>Kawasan berpotensi terlanda goncangan gempa bumi dengan Skala intensitas berkisar VII - VIII MMI. Berpotensi terjadi retakan tanah, pelulukan (liquefaction), longsoran pada topografi perbukitan dan pergeseran tanah dalam dimensi kecil. Pada umumnya tersusun Oleh batuan Tersier dan sebagian endapan Kuarter.</item>
+        <item>Kawasan berpotensi terlanda goncangan gempa bumi kuat dengan Skala intensitas lebih besar dari VIII MMI (Modified Mercally Intensity). Berpotensi terjadi retakan tanah, pelulukan (liquefaction), longsoran pada topografi terjal dan pergeseran tanah. Zona ini tersusun Oleh batuan Kuarter berupa aluvium, endapan pantai dan rombakan gunungapi muda yang bersifat lepas, belum kompak dan memperkuat efek goncangan gempa bumi, sehingga rawan gempabumi.</item>
+        <item> Pada zona rawan tinggi apabila akan dibuat bangunan direkomendasikan agar dibuat banguna mengikuti kaidah bangunan tahan gempabumi dengan mempertimbangkan besarnya nilai percepatan dan amplifikasi gempabumi. Direkomendasikan agar menghindari membangun pada tanah urug yang tidak memenuhi persyaratan teknis.</item>
+    </string-array>
+    <string name="zkgt">Zona kerentanan gerakan tanah</string>
+    <string-array name="title_penjelasan_gm">
+        <item>Kerentanan gerakan tanah sangat rendah:</item>
+        <item>Kerentanan gerakan tanah rendah:</item>
+        <item>Kerentanan gerakan tanah menengah:</item>
+        <item>Kerentanan gerakan tanah tinggi:</item>
+        <item>rentan aliran bahan rombakan:</item>
+        <item>Batasan dan fungsi peta:</item>
+        <item>Saran penggunaan:</item>
+    </string-array>
+    <string-array name="penjelasan_gm">
+        <item>Daerah yang mempunyai tingkat kerentanan sangat rendah untuk terkena gerakan tanah, Pada zona ini jarang atau hampir tidak pernah terjadi gerakan tanah. baik gerakan tanah lama maupun gerakan tanah barn, kecuali pada daerah tidak luas pada tebing sungai.</item>
+        <item>Daerah yang tingkat kerentanan rendah untuk terkena gerakan tanah. Umumnya pada zona ini jarang terjadi gerakan tanah jika tidak mengalami ganggunan pada lereng. dan jika terdapat gerakan tanah lama, lereng telah mantap kembaii, Gerakan tanah tkTdimensi kecil mungkin dapat teqadi, tennama pada tebing lembah (alur) sungai.</item>
+        <item>Daerah yang mempunyai tingkat kerentanan menengah untuk terkena gerakan tanah. Pada zona ini dapat terjadi gerakan tanah terutama pada daerah vang berbatasan dengan lembah sungai, gawir, tebing jalan atau jika lereng mengalami gangguan. Gerakan tanah lama dapat aktif kembali akibat curah hujan yang tinggi dan erosi kuat.</item>
+        <item>Daerah yang mempunyai tingkat kerentanan tinggi untuk terkena gerakan tanah. Pada zona ini sering terjadi gerakan tanah. sedangkan gerakan tanah lama dan gerakan tanah baru masih aktif bergerak, akibat curah hujan yang tinggi dan erosi yang kuat.</item>
+        <item>Aliran bahan rombakan dapat teciadi bila terdapat akumulasi dan pembendungan alur Oleh endapan lahar atau material longsoran pada alur sungai di bagian hulu dan dipicu Oleh erosi yang kuat dan curah hujan yang tinggi.</item>
+        <item>Zona kerentanan gerakan tanah yang termuat dalam peta ini bersifat umum untuk informasi awal tentang daerah-daerah yang mempunyai kemungkinan terjadinya gerakan tanah dan daerah-daerah yang relatif mantap.Perubahan kondisi topografi dan tata guna lahan setelah dipetakan dapat merubah zona kerentanan gerakan tanah yang termuat dalam peta.</item>
+        <item>Peta ini memuat informasi tingkat kerentanan (kepekaan) suatu daerah untuk terjadi gerakan tanah sehingga dapat diindentitikasi daerah-daerah yang akan menghadapi permasalahan gerakan tanah, dan melakukan upaya pencegahan atau penanggulangannya, Daerah yang terletak pada zona kerentanan geraakan tanah tinggi untuk terkena geraakan tanah, agar dihindarkan sebagai lokasi pemukiman atau bangunan infrastruktur vital dan strategis. Jika tidak dapat dihindari, akan mengembangkan atau membangun pada daerah berkerentanan gerakan tanah menengah, diperlukan penyelidikan kemantapan lereng seeara rinei untuk menghindari terjadi gerkantanah. Pada zona berkerentanan gerakan tanah menengah harus dilakukan penyelidikan gerakantanah secara rinci jika akan melakukan penyayatan lereng.</item>
+    </string-array>
+    <string-array name="title_penjelasan_tsunami">
+        <item>Kerawanan rendah:</item>
+        <item>Kerawanan menengah:</item>
+        <item>Kerawanan tinggi:</item>
+    </string-array>
+    <string-array name="penjelasan_tsunami">
+        <item>Daerah ini berpotensi dilanda tsunami dengan ketinggian genangan kurang dari I m dengan Skala intensitas tsunami V atau kurang. Terasa Oleh semua orang di kapal besar dan teramati di pantai. Sebagian kecil orang ketakutan dan lari ke tempat yang lebih tinggi. Kapal-kapal kecil bogerak cepat ke darat, beberapa diantaranya bertabrakan dengan yang lainnya dan terbalik. Pasir terendapkan pada tempat tertentu.Terjadi banjir pada tanah kosong dekat pantai.</item>
+        <item>Daerah ini berpotensi dilanda tsunami dengan ketinggian genangan I - 3 m dengan Skala intensitas tsunami V-VI. Tsunami dengan ketinggian 3 m menyebabkan banyak orang ketakutan dan lari ke tempat yang lebih tinggi. Kapal-kapal kecil terdorong arus dan saling bertabrakan, kerusakan pada sebagianbangunan kayu, sebagian besar bangunan masih bertahan</item>
+        <item>Daerah ini berpotensi dilanda tsunami dengan ketinggian genangan > 3 m dengan Skala intensitas tsunami VII atau lebih. Tsunami dengan tinggi 3 m dapat menyebabkan kapal kecil rusak, kapal besar terdomng ke darat, banyak bangunan kayu rusak Pasir dan bongkah terendap di pantai. Jika tinggi tsunami lebih dari 8 m mengakibatkan kerusakan sangat parah bahkan tembok pelindung tsunami, pemecah ombak dan jalur hijau rusak,</item>
+    </string-array>
+
     <string name="keterangan_patahan">Sesar/Patahan</string>
 
     <string name="input_koordinat">Masukkan titik koordinat (Khusus Provinsi Aceh, Sumatera Utara, Sumatera Barat, dan Riau</string>
