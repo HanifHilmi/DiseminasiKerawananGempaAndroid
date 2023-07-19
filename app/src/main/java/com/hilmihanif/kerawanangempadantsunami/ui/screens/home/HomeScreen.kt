@@ -27,6 +27,8 @@ import com.hilmihanif.kerawanangempadantsunami.ui.navGraphs.HomeNavGraph
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(googleAuthUIClient:GoogleAuthUiClient,navController: NavHostController = rememberNavController()) {
+
+
     Scaffold(
         topBar = {},
         bottomBar = {

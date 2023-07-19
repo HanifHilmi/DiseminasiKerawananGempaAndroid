@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,6 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -42,41 +48,6 @@ import com.hilmihanif.kerawanangempadantsunami.viewmodels.SignInState
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.SignInViewModel
 import kotlinx.coroutines.launch
 
-/*
-@Composable
-fun LoginContent(
-    onClick: () -> Unit,
-    onSignUpClick: () -> Unit,
-    onForgotClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier.clickable { onClick() },
-            text = "LOGIN",
-            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            modifier = Modifier.clickable { onSignUpClick() },
-            text = "Sign Up",
-            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-            fontWeight = FontWeight.Medium
-        )
-        Text(
-            modifier = Modifier.clickable { onForgotClick() },
-            text = "Forgot Password",
-            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-            fontWeight = FontWeight.Medium
-        )
-    }
-
-
-}
- */
 
 @Composable
 fun GoogleSignInScreen(
@@ -87,6 +58,7 @@ fun GoogleSignInScreen(
     val loginState = viewModel.signInState.collectAsState()
     val localLifecycleOwner = LocalLifecycleOwner.current
     val localContext = LocalContext.current
+    var signInLoading by rememberSaveable { mutableStateOf(false)}
 
     // check if user is logged in
 //    LaunchedEffect(key1 = Unit){
@@ -110,7 +82,27 @@ fun GoogleSignInScreen(
             }
         }
     )
-    LaunchedEffect(key1 = loginState.value.isSignInSuccessful ){
+
+    SignInScreen(
+        onSignInClick = {
+
+            localLifecycleOwner.lifecycleScope.launch {
+                signInLoading = true
+                val signInIntentSender = googleAuthUiClient.signIn()
+                launcher.launch(
+                    IntentSenderRequest.Builder(
+                        signInIntentSender ?: return@launch
+                    ).build()
+                )
+            }
+        },
+        state = loginState.value,
+        signInLoading = signInLoading,
+        onSkipSignInClick = {
+            onLoggedIn(false)
+        }
+    )
+    LaunchedEffect(key1 = loginState.value.isSignInSuccessful){
         if (loginState.value.isSignInSuccessful){
             Toast.makeText(
                 localContext,
@@ -119,34 +111,30 @@ fun GoogleSignInScreen(
             ).show()
             onLoggedIn(true)
 
+            //signInLoading = false
             viewModel.resetState()
-        }
+        }else{
+            if (loginState.value.signInError != null){
+                Toast.makeText(
+                    localContext,
+                    "Sign In gagal ${loginState.value.signInError}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
 
+        }
     }
 
 
-    SignInScreen(
-        onSignInClick = {
-            localLifecycleOwner.lifecycleScope.launch {
-                val signInIntentSender = googleAuthUiClient.signIn()
-                launcher.launch(
-                    IntentSenderRequest.Builder(
-                        signInIntentSender ?: return@launch
-                    ).build()
-                )
 
-            }
-        },
-        state = loginState.value,
-        onSkipSignInClick = {
-            onLoggedIn(false)
-        }
-    )
 }
+
+
 
 @Composable
 fun SignInScreen(
     state: SignInState,
+    signInLoading:Boolean,
     onSignInClick:()-> Unit,
     onSkipSignInClick: () -> Unit
 ) {
@@ -163,7 +151,7 @@ fun SignInScreen(
     }
 
     SignInContent(
-        isNotLoading = !state.isSignInSuccessful,
+        signInLoading = signInLoading,//!state.isSignInSuccessful,
         onSignInClick = onSignInClick,
         onSkipSignInClick = onSkipSignInClick
     )
@@ -172,7 +160,7 @@ fun SignInScreen(
 
 @Composable
 fun SignInContent(
-    isNotLoading:Boolean,
+    signInLoading:Boolean,
     onSignInClick: () -> Unit,
     onSkipSignInClick: () -> Unit
 ) {
@@ -197,28 +185,29 @@ fun SignInContent(
                     .height(IntrinsicSize.Min)
                     .fillMaxWidth(),
                 onClick = { onSignInClick() },
-                enabled = isNotLoading
+                enabled = !signInLoading
 
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_google),
-                    contentDescription = "",
-                    modifier = Modifier.height(24.dp)
-                )
+                if(signInLoading){
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                } else{
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_google),
+                        contentDescription = "",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
                 Text(text = "Login dengan akun Google")
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { onSkipSignInClick() }, modifier = Modifier
+                onClick = { onSkipSignInClick() },
+                modifier = Modifier
                     .height(IntrinsicSize.Min)
                     .fillMaxWidth()
 
             ) {
-//                Icon(
-//                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_google),
-//                    contentDescription = "",
-//                    modifier = Modifier.height(24.dp)
-//                )
+
                 Text(text = "Masuk tanpa login")
             }
         }
@@ -238,7 +227,7 @@ fun SignInContent(
 fun PrevLoginScreen() {
 MaterialTheme {
     Surface {
-        SignInContent(isNotLoading = true,onSignInClick = {}, onSkipSignInClick = {})
+        SignInContent(signInLoading  = true,onSignInClick = {}, onSkipSignInClick = {})
     }
 }
 }
