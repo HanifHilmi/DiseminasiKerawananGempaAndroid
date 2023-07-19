@@ -58,11 +58,14 @@ class MainMapViewModel : ViewModel() {
     private val _mapUiState= MutableStateFlow(MapUiState(setBaseMap()))
     private val _resultCardUiState = MutableStateFlow(ResultCardUiState())
     private val _firebaseResponse: MutableStateFlow<DataState> = MutableStateFlow(DataState.Empty)
+    private val _firebaseGempa5Response: MutableStateFlow<DataState> = MutableStateFlow(DataState.Empty)
 
     private val _mapView = MutableLiveData<MapView>()
     private val _locationDisplay = MutableLiveData<LocationDisplay>()
-    private val _mapScale = MutableStateFlow<Double>(0.0)
+    private val _mapScale = MutableStateFlow(0.0)
     private val _latestResponse = MutableStateFlow(Gempa())
+
+
 
 
     val inputCardUiState= _inputCardUiState.asStateFlow()
@@ -71,6 +74,8 @@ class MainMapViewModel : ViewModel() {
     val mapScale = _mapScale.asStateFlow()
     val firebaseResponse = _firebaseResponse.asStateFlow()
     val latestResponse = _latestResponse.asStateFlow()
+    val firebaseGempa5Response = _firebaseGempa5Response.asStateFlow()
+
 
 
     val resultCardUiState = _resultCardUiState.asStateFlow()
@@ -665,7 +670,9 @@ class MainMapViewModel : ViewModel() {
     init {
         setFaultLayer()
         setLocatorTask()
+        fetchLastDataFromFirebaseDB()
         fetchDataFromFirebaseDB()
+        fetchGempaM5FromFirebaseDB()
 
 
 
@@ -683,6 +690,65 @@ class MainMapViewModel : ViewModel() {
 //
 //        }
 //    }
+    private fun fetchGempaM5FromFirebaseDB(){
+        val tempList = mutableListOf<Gempa>()
+        FirebaseDatabase
+                .getInstance()
+                .getReference("Data/DataGempaM5")
+                .orderByChild("DateTime")
+                .limitToLast(15)
+                .addValueEventListener(object :ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Log.d(FIREBASE_TEST,"firebase g5 snapshot $snapshot")
+                        for(data in snapshot.children){
+                            val item = data.getValue(Gempa::class.java)
+                            if(item != null){
+                                tempList.add(item)
+                                //Log.d(FIREBASE_TEST,"fireitem added to templist ${item}")
+                            }
+                        }
+                        if (tempList.isNotEmpty()){
+                            _firebaseGempa5Response.value = DataState.Success(tempList)
+    //                        _latestResponse.update {
+    //                            tempList.last()
+    //                        }
+                        }
+                        Log.d(FIREBASE_TEST,"firebase snapshot g5 size ${tempList.size}")
+                        Log.d(FIREBASE_TEST,"firebase snapshot g5 size ${tempList.map { it.DateTime } }")
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        _firebaseGempa5Response.value = DataState.Failure(error.message)
+                    }
+
+                })
+    }
+
+    private fun fetchLastDataFromFirebaseDB(){
+        FirebaseDatabase
+            .getInstance()
+            .getReference("Data/DataGempa")
+            .orderByChild("DateTime")
+            .limitToLast(1)
+            .addValueEventListener(object :ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+//                    _latestResponse.update {
+//                        snapshot.getValue(Gempa::class.java)?:return
+//                    }
+
+                    snapshot.children.last().let {data->
+                        _latestResponse.update {
+                            data.getValue(Gempa::class.java)?:return
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+    }
 
     private fun fetchDataFromFirebaseDB() {
         val tempList = mutableListOf<Gempa>()
@@ -691,7 +757,7 @@ class MainMapViewModel : ViewModel() {
             .getInstance()
             .getReference("Data/DataGempa")
             .orderByChild("DateTime")
-            .limitToLast(10)
+            .limitToLast(20)
             .addValueEventListener(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Log.d(FIREBASE_TEST,"firebase snapshot $snapshot")
@@ -699,14 +765,14 @@ class MainMapViewModel : ViewModel() {
                         val item = data.getValue(Gempa::class.java)
                         if(item != null){
                             tempList.add(item)
-                            Log.d(FIREBASE_TEST,"fireitem added to templist ${item}")
+                            //Log.d(FIREBASE_TEST,"fireitem added to templist ${item}")
                         }
                     }
                     if (tempList.isNotEmpty()){
                         _firebaseResponse.value = DataState.Success(tempList)
-                        _latestResponse.update {
-                            tempList.last()
-                        }
+//                        _latestResponse.update {
+//                            tempList.last()
+//                        }
                     }
                     Log.d(FIREBASE_TEST,"firebase snapshot size ${tempList.size}")
                     Log.d(FIREBASE_TEST,"firebase snapshot size ${tempList.map { it.DateTime } }")

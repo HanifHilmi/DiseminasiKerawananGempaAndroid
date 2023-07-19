@@ -31,6 +31,7 @@ fun BerandaScreen(viewModel: MainMapViewModel) {
 
     val result = viewModel.firebaseResponse.collectAsState()
     val latestresult = viewModel.latestResponse.collectAsState()
+    val g5Result = viewModel.firebaseGempa5Response.collectAsState()
     //GempaHistoryContent(result = result.value)
 
     val localContext = LocalContext.current
@@ -50,7 +51,7 @@ fun BerandaScreen(viewModel: MainMapViewModel) {
             LaunchedEffect(key1 = result){
                 Toast.makeText(
                     localContext,
-                    (result.value as DataState.Failure).message.toString(),
+                    (result.value as DataState.Failure).message,
                     Toast.LENGTH_SHORT
                     ).show()
             }
@@ -114,7 +115,12 @@ fun BerandaScreen(viewModel: MainMapViewModel) {
                 }
 
                 2 -> {
-                    controllerVisibility = true
+//                    controllerVisibility = true
+                    GempaM5List(
+                        result = g5Result.value,
+                        viewModel = viewModel,
+                        mapControllerVisibile = {selected-> controllerVisibility = selected }
+                    )
                 }
             }
         }

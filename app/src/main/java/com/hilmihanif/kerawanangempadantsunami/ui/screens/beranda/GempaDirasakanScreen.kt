@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -92,9 +93,9 @@ fun GempaDirasakanList(
 @Composable
 fun GempaDirasakanBox(gempaList : MutableList<Gempa>,onItemClicked:(Gempa)->Unit) = Box(
     modifier = Modifier
-        .fillMaxWidth()
+        .fillMaxSize()
         .background(MaterialTheme.colorScheme.background),
-    contentAlignment = Alignment.Center
+    contentAlignment = Alignment.TopCenter
 ) {
     LazyColumn{
         items(gempaList.reversed()){gempa ->
@@ -127,7 +128,7 @@ fun GempaCard(gempa: Gempa,modifier: Modifier = Modifier,onItemClicked:(Gempa)->
                         .width(IntrinsicSize.Min)
                 ) {
                     //Text(text = "Magnitude")
-                    Text(text = gempa.Magnitude)
+                    Text(text = gempa.Magnitude,style= MaterialTheme.typography.titleLarge)
 
                 }
                 Column(modifier = Modifier.padding(12.dp)) {
@@ -157,7 +158,7 @@ fun GempaCard(gempa: Gempa,modifier: Modifier = Modifier,onItemClicked:(Gempa)->
                 }
             }
 
-            if(gempa.Dirasakan.length > 3){
+            if((!gempa.Dirasakan.isNullOrEmpty())&&(gempa.Dirasakan.length > 3)){
                 Divider(thickness = 2.dp)
                 Text(text = gempa.Dirasakan, style = MaterialTheme.typography.labelMedium,modifier = Modifier.padding(6.dp))
             }

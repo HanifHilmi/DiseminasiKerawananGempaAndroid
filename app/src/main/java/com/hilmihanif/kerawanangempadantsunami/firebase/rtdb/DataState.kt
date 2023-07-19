@@ -6,3 +6,6 @@ sealed class DataState{
     object Loading : DataState()
     object Empty : DataState()
 }
+
+
+

@@ -9,14 +9,14 @@ data class Gempa(
     val DateTime:String ="",
     val Jam:String = "",
     val Kedalaman:String ="",
-    val Dirasakan:String ="",
+    val Dirasakan:String? ="",
     val Bujur:String ="",
     val Lintang:String ="",
     val Magnitude:String ="",
     val Potensi:String ="",
     val Tanggal:String ="",
     val Wilayah:String ="",
-    val Shakemap:String ="",
+    val Shakemap:String? ="",
     val Terkirim:String? = null
 ){
     fun getWgs84Point() : Point? {
@@ -40,7 +40,7 @@ data class Gempa(
     }
 //    Point(VIEWPOINT_X, VIEWPOINT_Y, SpatialReference.wgs84())
 
-    fun getShakemapUrl():String = "https://data.bmkg.go.id/DataMKG/TEWS/$Shakemap"
+    fun getShakemapUrl():String = "https://data.bmkg.go.id/DataMKG/TEWS/${Shakemap}"
 
 
 }

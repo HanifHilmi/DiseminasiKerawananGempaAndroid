@@ -107,7 +107,7 @@ fun GempaSelectedCard(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
                     )
                 }
-                if(gempaData.Dirasakan.length > 3){
+                if((!gempaData.Dirasakan.isNullOrEmpty())&&(gempaData.Dirasakan.length) > 3){
                     Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.height(IntrinsicSize.Min)) {
                         Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_sensor), contentDescription = "")
                         Text(
@@ -175,7 +175,7 @@ fun CustomUrlLinkText(modifier :Modifier= Modifier,str:String,clickableLink:Stri
     ClickableText(
         text = anotatedString,
         style =style,
-        modifier= Modifier.fillMaxWidth(),
+        modifier= modifier.fillMaxWidth(),
         onClick = {
             anotatedString
                 .getStringAnnotations("URL",it,it)
