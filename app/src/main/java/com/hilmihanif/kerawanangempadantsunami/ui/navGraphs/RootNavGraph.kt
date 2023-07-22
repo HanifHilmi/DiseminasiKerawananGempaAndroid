@@ -19,6 +19,10 @@ fun RootNavigationGraph(navController: NavHostController) {
             oneTapClient = Identity.getSignInClient(localContext)
         )
     }
+
+//    LaunchedEffect(key1 = Unit){
+//        PreferenceHelper.subscribeToInitialTopicIfFirstTime(localContext)
+//    }
     NavHost(
         navController = navController,
         route = Graph.ROOT,

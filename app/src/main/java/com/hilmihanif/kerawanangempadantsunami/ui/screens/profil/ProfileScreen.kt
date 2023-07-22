@@ -1,6 +1,7 @@
 package com.hilmihanif.kerawanangempadantsunami.ui.screens.profil
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -31,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +51,7 @@ import com.hilmihanif.kerawanangempadantsunami.BuildConfig
 import com.hilmihanif.kerawanangempadantsunami.R
 import com.hilmihanif.kerawanangempadantsunami.firebase.auth.GoogleAuthUiClient
 import com.hilmihanif.kerawanangempadantsunami.firebase.auth.UserData
+import com.hilmihanif.kerawanangempadantsunami.utils.TEST_LOG
 import com.hilmihanif.kerawanangempadantsunami.viewmodels.SignInViewModel
 import kotlinx.coroutines.launch
 
@@ -58,10 +61,15 @@ fun ProfileScreen(
 ) {
     val viewModel = viewModel<SignInViewModel>()
     val currentActivity  = LocalContext.current as Activity?
+    val currentContext  = LocalContext.current
     val currentLifecycleOwner = LocalLifecycleOwner.current
     val loginState = viewModel.signInState.collectAsState()
     var isLoggedIn by rememberSaveable { mutableStateOf(authUiClient.isLoggedIn()) }
 
+    val isSubscribe by viewModel.observeTopicSubscribed(currentContext).collectAsState(true)
+
+
+    var switchState by remember { mutableStateOf(isSubscribe)}
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -102,7 +110,15 @@ fun ProfileScreen(
                 )
             }
         },
-        aboutMeClicked = {}
+        aboutMeClicked = {},
+        isNotifOn = switchState,
+        onSetNotifChange = {
+
+            Log.d(TEST_LOG,"FirebaseMessage notifstate:$isSubscribe")
+            switchState = it
+            viewModel.setTopicSubscribed(currentContext,it)
+        },
+
     )
 
 
@@ -110,7 +126,7 @@ fun ProfileScreen(
     LaunchedEffect(key1 = loginState.value.isSignInSuccessful ){
         if (loginState.value.isSignInSuccessful){
             Toast.makeText(
-                currentActivity,
+                currentContext,
                 "Sign in berhasil",
                 Toast.LENGTH_LONG
             ).show()
@@ -121,7 +137,7 @@ fun ProfileScreen(
         }else{
             if (loginState.value.signInError != null){
                 Toast.makeText(
-                    currentActivity,
+                    currentContext,
                     "Sign In gagal ${loginState.value.signInError}",
                     Toast.LENGTH_LONG
                 ).show()
@@ -146,6 +162,8 @@ fun ProfileScreen(
 fun ProfileContent(
     userData: UserData?,
     isLoggedIn:Boolean,
+    isNotifOn:Boolean,
+    onSetNotifChange:(Boolean)-> Unit,
     onSignOut:() -> Unit,
     onReSignIn:() -> Unit,
     aboutMeClicked:() -> Unit,
@@ -165,7 +183,10 @@ fun ProfileContent(
                 onReSignIn = onReSignIn
             )
         }
-        SettingsContent()
+        SettingsContent(
+            isNotifOn = isNotifOn,
+            onSetNotifChange = onSetNotifChange
+        )
         AboutContent(aboutMeClicked = aboutMeClicked)
     }
 
@@ -193,7 +214,10 @@ fun NotLoggedInProfileContent(modifier:Modifier = Modifier, onReSignIn: () -> Un
 
 
 @Composable
-fun SettingsContent() {
+fun SettingsContent(
+    isNotifOn:Boolean,
+    onSetNotifChange:(Boolean)-> Unit
+) {
     Column {
 
         Divider(thickness = 4.dp)
@@ -215,8 +239,8 @@ fun SettingsContent() {
         ) {
             Text(text = "Notifikasi Gempa",style = MaterialTheme.typography.bodyLarge,)
             Switch(
-                checked = true,
-                onCheckedChange = { },
+                checked = isNotifOn,
+                onCheckedChange = { onSetNotifChange(it)},
             )
         }
         Row(
@@ -339,9 +363,11 @@ fun PrevProfilScreen() {
                     profilePictureUrl = ""
                 ),
                 isLoggedIn = true,
+                isNotifOn = false,
                 onSignOut = {},
                 onReSignIn = {},
-                aboutMeClicked = {}
+                aboutMeClicked = {},
+                onSetNotifChange = {}
             )
         }
     }
